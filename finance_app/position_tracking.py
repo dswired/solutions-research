@@ -199,7 +199,3 @@ def get_tracked_positions():
     tracked_positions = valued_posns.merge(accounts, how="left", on=["accountid"])
     return tracked_positions
 
-
-if __name__ == "__main__":
-    res = get_tracked_positions()
-    res.to_csv("data/tracked_positions.csv", index=False)
