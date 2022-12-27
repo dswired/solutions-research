@@ -5,9 +5,11 @@ from pathlib import Path
 import pandas as pd
 import streamlit_authenticator as stauth
 
+PARENT = Path(__file__).parent
+
 
 def get_authentication_data(passwords=True) -> Tuple[list, ...]:
-    auth_file = Path(__file__).parent / "authentication.csv"
+    auth_file = PARENT / "data" / "authentication.csv"
     df = pd.read_csv(auth_file)
     names, usernames = df["names"].to_list(), df["usernames"].to_list()
     if passwords:
@@ -19,7 +21,7 @@ def get_authentication_data(passwords=True) -> Tuple[list, ...]:
 def generate_hashed_passwords(savefile: str):
     names, usernames, passwords = get_authentication_data()
     hashed_passwords = stauth.Hasher(passwords).generate()
-    file_path = Path(__file__).parent / savefile  # eg. "hashed_passwords.pkl"
+    file_path = PARENT / savefile  # eg. "hashed_passwords.pkl"
 
     with file_path.open("wb") as file:
         pickle.dump(hashed_passwords, file)
