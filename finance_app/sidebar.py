@@ -11,9 +11,7 @@ def sidebar(**opts):
     st.sidebar.title(APP_TITLE)
     st.sidebar.subheader("Manage your Portfolio")
 
-    clients = get_advisor_client_list(opts["username"])
-
     selected_client = st.sidebar.selectbox(
-        'Manage your clients', clients, index=0, help="List of clients"
+        'Manage your clients', opts["clients"], index=0, help="Your client list"
     )
     return selected_client

@@ -73,14 +73,16 @@ class TrackingModel(Transaction):
     def get_position_qtys(self, df: DataFrame) -> DataFrame:
         _df = df[df[self.security] != "Cash"]
         grpd = _df.groupby(self.position)
-        _res = grpd[self.qty_ffect].sum().cumsum()
+        grp_sum = grpd[self.qty_ffect].sum()
+        _res = grp_sum.groupby(level=0).cumsum()
         res = _res.reset_index()
         res.rename(columns={self.qty_ffect: "qty"}, inplace=True)
         return res
 
     def get_acct_cash(self, df: DataFrame) -> DataFrame:
         grpd = df.groupby([self.acct, self.dte])
-        _res = grpd[self.cash_ffect].sum().cumsum()
+        grp_sum = grpd[self.cash_ffect].sum()
+        _res = grp_sum.groupby(level=0).cumsum()
         res = _res.reset_index()
         res.rename(columns={self.cash_ffect: "qty"}, inplace=True)
         return res
@@ -145,24 +147,6 @@ class TrackingModel(Transaction):
         return res
 
 
-def get_last_known_price(df: pd.DataFrame) -> pd.DataFrame:
-    accounts = set(df.accountid)
-    results = []
-    for account in accounts:
-        df_acct = df[df.accountid == account]
-        instruments = set(df.securityid)
-        for instrument in instruments:
-            posn = df_acct[df_acct.securityid == instrument]
-            if instrument == "Cash":
-                posn["price"] = 1
-            else:
-                posn.sort_values(by=["date"], inplace=True)
-                posn["price"].fillna(method="ffill", inplace=True)
-                posn["price"].fillna(method="bfill", inplace=True)
-            results.append(posn)
-    return pd.concat(results)
-
-
 def get_account_data(path):
     account_file = path / "accounts.csv"
 
@@ -175,16 +159,35 @@ def get_account_data(path):
     return accounts
 
 
+def reindex_prices(pxs: pd.DataFrame):
+    start, end = "2015-12-31", "2022-12-29"
+    new_index = pd.date_range(start, end, freq="D")
+    px = pxs.drop_duplicates(subset=["date", "securityid"], keep="first")
+    instruments = set(px.securityid)
+    dfs = []
+    for instrument in instruments:
+        df = px[px.securityid == instrument].sort_values(
+            by="date").set_index("date")
+        df_re = df.reindex(new_index).fillna(method="ffill").fillna(method="bfill")
+        dfs.append(df_re.reset_index())
+    result = pd.concat(dfs)
+    result.columns = ["date", "securityid", "price"]
+    return result
+
+
 def get_position_pxs(posns: pd.DataFrame, pxs: pd.DataFrame) -> pd.DataFrame:
-    _mrge = posns.merge(pxs, how="left", on=["date", "securityid"])
-    results = get_last_known_price(_mrge)
+    clean_pxs = reindex_prices(pxs)
+    results = posns.merge(clean_pxs, how="left", on=["date", "securityid"])
+    cash_posns = results.securityid == "Cash"
+    results.loc[cash_posns, "price"] = 1
+    results["mv"] = results["qty"] * results["price"]
     return results
 
 
 def get_tracking_inputs():
     data_path = PARENT / "data"
     trx_file = data_path / "transactions.csv"
-    pxs_file = data_path / "prices.csv"
+    pxs_file = data_path / "prices_2022-12-29.csv"
 
     accounts = get_account_data(data_path)
     trxs = pd.read_csv(trx_file, parse_dates=["trade_date"])
@@ -198,4 +201,3 @@ def get_tracked_positions():
     valued_posns = get_position_pxs(posns, pxs)
     tracked_positions = valued_posns.merge(accounts, how="left", on=["accountid"])
     return tracked_positions
-
