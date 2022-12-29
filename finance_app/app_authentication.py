@@ -28,7 +28,7 @@ def generate_hashed_passwords(savefile: str):
 
 
 def load_hashed_passowrds(file: str):
-    file_path = Path(__file__).parent / file
+    file_path = PARENT / file
     with file_path.open("rb") as f:
         hashed_passwords = pickle.load(f)
     return hashed_passwords
