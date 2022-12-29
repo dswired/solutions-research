@@ -1,7 +1,6 @@
 from datetime import datetime
 
 import streamlit as st
-import pandas as pd
 
 from sidebar import sidebar
 from app_authentication import get_authentication
@@ -49,7 +48,7 @@ def main_frontend(**opts):
         asof_date = st.date_input(
             "AsOf date",
             value=st.session_state["asof_date"],
-            max_value=st.session_state["asof_date"]
+            max_value=TODAY
         )
         st.session_state["asof_date"] = asof_date
 
