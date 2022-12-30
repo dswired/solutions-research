@@ -1,4 +1,6 @@
 from pathlib import Path
+from typing import Optional
+from datetime import datetime
 
 import pandas as pd
 from pandas import Series, DataFrame, concat
@@ -26,12 +28,13 @@ class Transaction:
 
 
 class TrackingModel(Transaction):
-    def __init__(self) -> None:
+    def __init__(self, end_date: Optional[str] = None) -> None:
         """
         attributes are a strict reference to column headers as they appear in the db
         see singleclient.models. Any change to model names should result in a change
         to the attributes here.
         """
+        self.end_date = end_date
         self.dte = "trade_date"
         self.ttype = "trx_type"
         self.acct = "accountid"
@@ -46,6 +49,10 @@ class TrackingModel(Transaction):
         self.order = "trx_id"
         self.trx_order = [self.acct, self.dte, self.order]
         self.position = [self.acct, self.security, self.dte]
+
+    @property
+    def tracking_end_date(self):
+        return datetime.today() if not self.end_date else self.end_date
 
     def _order_trxs(self, trxs: DataFrame) -> DataFrame:
         """
@@ -93,13 +100,14 @@ class TrackingModel(Transaction):
         df.rename(columns={self.dte: "date", self.security: "securityid"}, inplace=True)
         return df
 
-    @staticmethod
-    def _reindex_posn(df: DataFrame) -> DataFrame:
+    def _reindex_posn(self, df: DataFrame) -> DataFrame:
         """
         df is a single position timeseries
         """
+        start, end = df.date.min(), self.tracking_end_date
+        new_index = pd.date_range(start, end, freq="D")
         _df = df.sort_values(by="date").set_index("date")
-        res = _df.resample("D").fillna(method="ffill")
+        res = _df.reindex(new_index).fillna(method="ffill")
         return res.reset_index()
 
     def _reindex_acct_posns(self, df: DataFrame) -> DataFrame:
@@ -144,7 +152,7 @@ class TrackingModel(Transaction):
         cash = self.get_acct_cash(ord_trxs)
         _res = self.cleanup_positions(qty, cash)
         res = self.reindex_posns_daily(_res)
-        return res
+        return res.rename(columns={"index": "date"})
 
 
 def get_account_data(path):
@@ -159,15 +167,14 @@ def get_account_data(path):
     return accounts
 
 
-def reindex_prices(pxs: pd.DataFrame):
-    start, end = "2015-12-31", "2022-12-29"
+def reindex_prices(pxs: pd.DataFrame, end_date: Optional[str] = None):
+    start, end = "2015-12-31", datetime.today() if not end_date else end_date
     new_index = pd.date_range(start, end, freq="D")
     px = pxs.drop_duplicates(subset=["date", "securityid"], keep="first")
     instruments = set(px.securityid)
     dfs = []
     for instrument in instruments:
-        df = px[px.securityid == instrument].sort_values(
-            by="date").set_index("date")
+        df = px[px.securityid == instrument].sort_values(by="date").set_index("date")
         df_re = df.reindex(new_index).fillna(method="ffill").fillna(method="bfill")
         dfs.append(df_re.reset_index())
     result = pd.concat(dfs)

@@ -1,5 +1,6 @@
 from datetime import datetime
 
+import pandas as pd
 import streamlit as st
 
 from sidebar import sidebar
@@ -7,9 +8,15 @@ from app_authentication import get_authentication
 from data_processing import (
     get_advisor_data,
     get_advisor_client_list,
-    aggregate_positions
+    aggregate_positions_upto_date,
+    aggregate_positions_on_date,
+    get_aggregation_level,
+    get_client_account_positions
 )
-from graphs import get_time_series_plot
+from graphs import (
+    get_time_series_plot,
+    get_pie_chart
+)
 
 TODAY = datetime.today()
 
@@ -32,35 +39,44 @@ def frontend():
         if selected_client != "All Clients":
             positions = positions[positions.client_name == selected_client]
 
-        main_frontend(name=name, username=username, client=selected_client, positions=positions)
+        main_frontend(
+            name=name, username=username, client=selected_client, positions=positions, account=None
+        )
         authenticator.logout("Logout", "sidebar")
 
 
 def main_frontend(**opts):
-    col1, col2 = st.columns([5, 1])
+    positions = get_client_account_positions(opts["positions"], opts["client"], opts["account"])
 
-    positions = opts["positions"]
-
+    col1, col2 = st.columns([6, 2])
     if "asof_date" not in st.session_state:
         st.session_state["asof_date"] = TODAY
 
     with col2:
         asof_date = st.date_input(
-            "AsOf date",
-            value=st.session_state["asof_date"],
-            max_value=TODAY
+            "AsOf date", value=st.session_state["asof_date"], max_value=TODAY
         )
         st.session_state["asof_date"] = asof_date
 
     filter_date = st.session_state["asof_date"].strftime("%Y-%m-%d")
-    agg = aggregate_positions(positions, upto=filter_date)
+    agg_upto_df: pd.DataFrame = aggregate_positions_upto_date(positions, upto_date=filter_date)
+    date_agg_level: str = get_aggregation_level(client=opts["client"], account=opts["account"])
+    agg_on_df: pd.DataFrame = aggregate_positions_on_date(positions, on_date=filter_date, level=date_agg_level)
 
     with col1:
         show_table = st.checkbox("Show as table!")
         if not show_table:
-            fig = get_time_series_plot(agg, xaxis_value_name="date", yaxis_value_names={x: x for x in ["Market Value"]},
-                                       title=None)
-            st.plotly_chart(fig, use_container_width=True)
+            ts_line = get_time_series_plot(
+                agg_upto_df,
+                xaxis_value_name="date",
+                yaxis_value_names={x: x for x in ["Market Value"]}
+            )
+            st.plotly_chart(ts_line, use_container_width=True)
         else:
-            st.dataframe(agg)  # Use Agrid to style this in future!
+            st.dataframe(agg_upto_df)  # Use Agrid to style this in future!
             # https://towardsdatascience.com/make-dataframes-interactive-in-streamlit-c3d0c4f84ccb
+
+    col3, col4 = st.columns([4, 4])
+    with col3:
+        pie = get_pie_chart(agg_on_df, label_col=date_agg_level, values_col="Market Value")
+        st.plotly_chart(pie, use_container_width=True)

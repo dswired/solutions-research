@@ -21,7 +21,7 @@ def get_time_series_plot(
         df: pd.DataFrame,
         xaxis_value_name: str,
         yaxis_value_names: Dict[str, str],
-        title: str,
+        title: Optional[str] = None,
         include_range_slider: bool = False,
 ):
     fig = get_line_plot(df, xaxis_value_name, yaxis_value_names, title)
@@ -44,4 +44,17 @@ def get_time_series_plot(
             type="date",
         )
     )
+    return fig
+
+
+def get_pie_chart(
+        df: pd.DataFrame,
+        label_col: str,
+        values_col: str,
+        title: Optional[str] = None
+):
+    labels = df[label_col].to_list()
+    values = df[values_col].to_list()
+    fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
+    fig.update_layout(title=title)
     return fig
