@@ -19,9 +19,13 @@ from graphs import (
 )
 
 TODAY = datetime.today()
+LAYOUT = "wide"
 
 
 def frontend():
+    st.set_page_config(
+            layout=LAYOUT
+        )
     authenticator = get_authentication()
     name, auth_status, username = authenticator.login("Login", "main")
 
@@ -37,10 +41,12 @@ def frontend():
         selected_client = sidebar(name=name, username=username, clients=advisor_clients)
 
         if selected_client != "All Clients":
-            positions = positions[positions.client_name == selected_client]
+            posns = positions[positions.client_name == selected_client]
+        else:
+            posns = positions.copy()
 
         main_frontend(
-            name=name, username=username, client=selected_client, positions=positions, account=None
+            name=name, username=username, client=selected_client, positions=posns, account=None
         )
         authenticator.logout("Logout", "sidebar")
 
@@ -76,7 +82,7 @@ def main_frontend(**opts):
             st.dataframe(agg_upto_df)  # Use Agrid to style this in future!
             # https://towardsdatascience.com/make-dataframes-interactive-in-streamlit-c3d0c4f84ccb
 
-    col3, col4 = st.columns([4, 4])
+    col3, col4 = st.columns([1, 1])
     with col3:
         pie = get_pie_chart(agg_on_df, label_col=aggregation_level, values_col="Market Value")
         st.plotly_chart(pie, use_container_width=True)
