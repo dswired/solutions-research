@@ -60,8 +60,8 @@ def main_frontend(**opts):
 
     filter_date = st.session_state["asof_date"].strftime("%Y-%m-%d")
     agg_upto_df: pd.DataFrame = aggregate_positions_upto_date(positions, upto_date=filter_date)
-    date_agg_level: str = get_aggregation_level(client=opts["client"], account=opts["account"])
-    agg_on_df: pd.DataFrame = aggregate_positions_on_date(positions, on_date=filter_date, level=date_agg_level)
+    aggregation_level: str = get_aggregation_level(client=opts["client"], account=opts["account"])
+    agg_on_df: pd.DataFrame = aggregate_positions_on_date(positions, on_date=filter_date, level=aggregation_level)
 
     with col1:
         show_table = st.checkbox("Show as table!")
@@ -78,5 +78,5 @@ def main_frontend(**opts):
 
     col3, col4 = st.columns([4, 4])
     with col3:
-        pie = get_pie_chart(agg_on_df, label_col=date_agg_level, values_col="Market Value")
+        pie = get_pie_chart(agg_on_df, label_col=aggregation_level, values_col="Market Value")
         st.plotly_chart(pie, use_container_width=True)
