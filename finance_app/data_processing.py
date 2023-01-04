@@ -6,6 +6,9 @@ import streamlit as st
 
 DATA_LOC = Path(__file__).parent / "data"
 
+ALL_CLIENTS = "All Clients"
+ALL_ACCOUNTS = "All Accounts"
+
 
 def get_advisor_client_positions(advisor: str) -> pd.DataFrame:
     positions_file = DATA_LOC / "tracked_positions.csv"
@@ -35,8 +38,12 @@ def get_advisor_data(advisor: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     return accounts, positions
 
 
-def get_advisor_client_list(accounts: pd.DataFrame) -> list:
-    return ["All Clients"] + list(set(accounts.client_name))
+def get_advisor_client_list(positions: pd.DataFrame) -> list:
+    return [ALL_CLIENTS] + list(set(positions.client_name))
+
+
+def get_client_account_list(client: pd.DataFrame) -> list:
+    return [ALL_ACCOUNTS] + list(set(client.account_name))
 
 
 def aggregate_positions_upto_date(df: pd.DataFrame, upto_date) -> pd.DataFrame:
@@ -55,29 +62,42 @@ def aggregate_positions_on_date(df: pd.DataFrame, on_date, level: str) -> pd.Dat
     return agg
 
 
-def get_aggregation_level(client: str, account: Optional[str] = None) -> str:
-    if client == "All Clients":
+def get_aggregation_level(client: str = ALL_CLIENTS, account: str = ALL_ACCOUNTS) -> str:
+    if client == ALL_CLIENTS:
         return "client_name"
     else:
-        if account:
-            return "securityid"
-        else:
+        if account == ALL_ACCOUNTS:
             return "account_name"
+        else:
+            return "securityid"
 
 
-def get_client_account_positions(df: pd.DataFrame, client: str, account: Optional[str] = None):
-    if client == "All Clients":
-        return df
+def get_client_account_positions(df: pd.DataFrame, client: str = ALL_CLIENTS, account: str = ALL_ACCOUNTS):
+    if client == ALL_CLIENTS:
+        return df.copy()
     else:
         client_df = df[(df.client_name == client)]
-        if account:
-            return client_df[(client_df.account_name == account)]
+        if account == ALL_ACCOUNTS:
+            return client_df.copy()
         else:
-            return client_df
+            return client_df[(client_df.account_name == account)]
 
 
-def get_inception_date():
-    ...
+def get_df_date_value(df: pd.DataFrame, dte, value_col):
+    filt = df[df.date == dte]
+    return filt[value_col].iloc[0]
+
+
+def get_date_market_value(df: pd.DataFrame, dte, cash=True):
+    if cash:
+        date_df = df[(df.date == dte)]
+    else:
+        date_df = df[(df.date == dte) & (df.securityid == 'Cash')]
+    return sum(date_df.mv)
+
+
+def get_inception_date(positions: pd.DataFrame):
+    return positions.date.min().strftime("%Y-%m-%d")
 
 
 def get_prices():
