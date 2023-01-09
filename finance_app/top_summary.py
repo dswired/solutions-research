@@ -12,14 +12,16 @@ from data_processing import (
     aggregate_positions_upto_date,
     get_aggregation_level,
     get_date_market_value,
-    get_inception_date
+    get_inception_date,
 )
 
+from analytics import AnalyticsLib
+
 TODAY = datetime.today()
-TOTAL_GAIN = 2354
 GAIN_DELTA = -12
-RETURN = 0.39080459770114945
 RETURN_DELTA = 0.2343432
+
+ANL = AnalyticsLib()
 
 
 def _top_summary_widths():
@@ -59,36 +61,58 @@ def get_client_positions_from_top_summary(**opts):
         updated_positions = get_client_account_positions(
             client_positions,
             st.session_state["selected_client"],
-            st.session_state["selected_account"]
+            st.session_state["selected_account"],
         )
         filter_date = st.session_state["asof_date"].strftime("%Y-%m-%d")
 
-        aggregated_positions_upto_selected_date: pd.DataFrame = aggregate_positions_upto_date(
-            updated_positions,
-            upto_date=filter_date
+        aggregated_positions_upto_selected_date: pd.DataFrame = (
+            aggregate_positions_upto_date(updated_positions, upto_date=filter_date)
         )
 
         st.session_state["aggregation_level"]: str = get_aggregation_level(
             client=st.session_state["selected_client"],
-            account=st.session_state["selected_account"]
+            account=st.session_state["selected_account"],
         )
 
-        aggregated_positions_on_selected_date: pd.DataFrame = aggregate_positions_on_date(
-            updated_positions, on_date=filter_date, level=st.session_state["aggregation_level"]
+        aggregated_positions_on_selected_date: pd.DataFrame = (
+            aggregate_positions_on_date(
+                updated_positions,
+                on_date=filter_date,
+                level=st.session_state["aggregation_level"],
+            )
         )
 
+        anl_ts = aggregated_positions_upto_selected_date[
+            ["date", "Market Value"]
+        ].set_index("date")
+
+        st.session_state["input_date_min"] = anl_ts.index.min()
+
+        # Summary analytics
         date_mv = get_date_market_value(updated_positions, dte=filter_date, cash=False)
         date_cash = get_date_market_value(updated_positions, dte=filter_date)
         inception_date = get_inception_date(updated_positions)
+        ytd_gain = ANL.get_ytd_gains(anl_ts, filter_date, ytd_cashflows=0)
+        ytd_return = ANL.get_ytd_return(anl_ts, filter_date, ytd_cashflows=0)
 
         col4.metric(label="Market Value (AsOf Date)", value=f"{date_mv:,.2f}")
         col5.metric(label="Cash Balance (AsOf Date)", value=f"{date_cash:,.2f}")
-        col6.metric(label="Total Gain (YtD)", value=f"{TOTAL_GAIN:,}", delta=GAIN_DELTA)
+        col6.metric(
+            label="Total Gain (YtD)", value=f"{ytd_gain:,.2f}", delta=GAIN_DELTA
+        )
         col7.metric(
             label="Total Return (YtD)",
-            value=f"{RETURN:.2%}",
+            value=f"{ytd_return:.2%}",
             delta=f"{RETURN_DELTA:.2%}",
         )
         col8.metric(label="Inception Date", value=inception_date)
-        col9.date_input("AsOf date", max_value=TODAY, key="asof_date")
-    return aggregated_positions_upto_selected_date, aggregated_positions_on_selected_date
+        col9.date_input(
+            "AsOf date",
+            max_value=TODAY,
+            min_value=st.session_state.input_date_min,
+            key="asof_date",
+        )
+    return (
+        aggregated_positions_upto_selected_date,
+        aggregated_positions_on_selected_date,
+    )

@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Tuple, Optional
+from typing import Tuple
 
 import pandas as pd
 import streamlit as st
@@ -47,11 +47,12 @@ def get_client_account_list(client: pd.DataFrame) -> list:
 
 
 def aggregate_positions_upto_date(df: pd.DataFrame, upto_date) -> pd.DataFrame:
-    agg = df.groupby(["date"])["mv"].sum()
+    _df = df[df.date <= upto_date]
+    agg = _df.groupby(["date"])["mv"].sum()
     results = agg.reset_index().sort_values(by=["date"])
     results.columns = ["date", "Market Value"]
     results["Change from previous day"] = results["Market Value"] - results["Market Value"].shift(1)
-    return results[results.date <= upto_date]
+    return results
 
 
 def aggregate_positions_on_date(df: pd.DataFrame, on_date, level: str) -> pd.DataFrame:
@@ -83,16 +84,11 @@ def get_client_account_positions(df: pd.DataFrame, client: str = ALL_CLIENTS, ac
             return client_df[(client_df.account_name == account)]
 
 
-def get_df_date_value(df: pd.DataFrame, dte, value_col):
-    filt = df[df.date == dte]
-    return filt[value_col].iloc[0]
-
-
 def get_date_market_value(df: pd.DataFrame, dte, cash=True):
     if cash:
-        date_df = df[(df.date == dte)]
-    else:
         date_df = df[(df.date == dte) & (df.securityid == 'Cash')]
+    else:
+        date_df = df[(df.date == dte)]
     return sum(date_df.mv)
 
 
