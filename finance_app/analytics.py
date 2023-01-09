@@ -209,16 +209,3 @@ class AnalyticsLib(SeriesUtilities):
         previous_dt_value = self.get_series_previous_dt_value(series)
         current_return = self.calculate_return(previous_dt_value, current_value)
         return current_value, current_return
-
-
-if __name__ == "__main__":
-    filter_date = "2022-12-09"
-    posns = pd.read_csv(
-        r"G:\My Drive\Fin_Engineering\d1g1t-repo\solutions-research\finance_app\data\anl.csv",
-        parse_dates=["date"],
-        index_col=["date"],
-    )
-    anl = AnalyticsLib()
-    ytd_return = anl.get_ytd_return(posns, filter_date, ytd_cashflows=0)
-    ytd_gains = anl.get_ytd_gains(posns, filter_date, ytd_cashflows=0)
-    print(ytd_gains)
