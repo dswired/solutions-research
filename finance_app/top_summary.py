@@ -13,6 +13,7 @@ from data_processing import (
     get_aggregation_level,
     get_date_market_value,
     get_inception_date,
+    get_analytics_ts,
 )
 
 from analytics import AnalyticsLib
@@ -82,20 +83,21 @@ def get_client_positions_from_top_summary(**opts):
             )
         )
 
-        anl_ts = aggregated_positions_upto_selected_date[
-            ["date", "Market Value"]
-        ].set_index("date")
+        anl_ts = get_analytics_ts(aggregated_positions_upto_selected_date)
 
         st.session_state["input_date_min"] = anl_ts.index.min()
 
         # Summary analytics
         date_mv = get_date_market_value(updated_positions, dte=filter_date, cash=False)
+        # TODO: use absolute and percentage changes for MV and Cash
         date_cash = get_date_market_value(updated_positions, dte=filter_date)
         inception_date = get_inception_date(updated_positions)
         ytd_gain = ANL.get_ytd_gains(anl_ts, filter_date, ytd_cashflows=0)
         ytd_return = ANL.get_ytd_return(anl_ts, filter_date, ytd_cashflows=0)
 
-        col4.metric(label="Market Value (AsOf Date)", value=f"{date_mv:,.2f}")
+        col4.metric(
+            label="Market Value (AsOf Date)", value=f"{date_mv:,.2f}"
+        )  # , delta=date_mv-previous_date_mv
         col5.metric(label="Cash Balance (AsOf Date)", value=f"{date_cash:,.2f}")
         col6.metric(
             label="Total Gain (YtD)", value=f"{ytd_gain:,.2f}", delta=GAIN_DELTA

@@ -1,6 +1,6 @@
 # Library to store all quantitative methods,etc
 
-from typing import Dict, Tuple, TypeVar
+from typing import Dict, Tuple
 import pandas as pd
 import numpy as np
 import warnings
@@ -9,7 +9,7 @@ from datetime import timedelta
 
 class SeriesUtilities:
     def __sanitize_series(self, series: pd.DataFrame) -> pd.DataFrame:
-        """Used to remove duplicate date indices...until we get cleaner data"""
+        """Used to remove duplicate date indices."""
         if self.__series_has_duplicate_dates(series):
             return series.loc[
                 ~series.index.duplicated(keep="first"),
@@ -51,6 +51,11 @@ class SeriesUtilities:
         return sanitized_series.loc[
             data_yr_start,
         ].values[0]
+
+    def get_series_inception_value(self, series: pd.DataFrame) -> float:
+        sanitized_series = self.__sanitize_series(series)
+        inception_date = series.index.min()
+        return sanitized_series.loc[inception_date].values[0]
 
     def get_series_previous_dt_value(self, series: pd.DataFrame) -> float:
         sanitized_series = self.__sanitize_series(series)
@@ -180,25 +185,29 @@ class AnalyticsLib(SeriesUtilities):
         ]
         return self.calc_annualized_vol(calc_series)
 
-    def series_summary(self, series: pd.DataFrame) -> Dict[str, str]:
+    def series_summary(self, series: pd.DataFrame) -> dict:
         current_value = self.get_series_current_value(series)
         previous_value = self.get_series_previous_dt_value(series)
         beginning_of_yr_value = self.get_series_begining_of_year_value(series)
+        inception_value = self.get_series_inception_value(series)
         current_return = self.calculate_return(previous_value, current_value)
 
-        start, end = series.index.min(), series.index.max()
-        year_start = pd.to_datetime(f"{end.year}-01-01")
-        ytd_days = (end - year_start).days
-        ytd_change = self.calculate_pct_change(current_value, beginning_of_yr_value)
-        ytd_return = self.get_single_period_return(series, ytd_days, end)
-        ytd_vol = self.get_series_period_volatility(year_start, series)
+        inception_date, end = series.index.min(), series.index.max()
+        since_inception_days = (end - inception_date).days
+        since_inception_change = self.calculate_pct_change(
+            current_value, inception_value
+        )
+        since_inception_return = self.get_single_period_return(
+            series, since_inception_days, end
+        )
+        since_inception_vol = self.get_series_period_volatility(inception_date, series)
         summary = {
             "Current Market Value": f"₵{current_value}",
             "Beginning of Year Market Value": f"₵{beginning_of_yr_value}",
-            "Return (Current)": f"{current_return:.2%}",
-            "% Change (YtD)": f"{ytd_change:.2%}",
-            "Return (YtD)": f"{ytd_return:.2%}",
-            "Volatility(YtD)": f"{ytd_vol:.2%}",
+            "Return (from previous day)": f"{current_return:.2%}",
+            "% Change (Since Inception)": f"{since_inception_change:.2%}",
+            "Return (Since Inception)": f"{since_inception_return:.2%}",
+            "Volatility (Since Inception)": f"{since_inception_vol:.2%}",
         }
         return summary
 

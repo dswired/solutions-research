@@ -4,6 +4,8 @@ from typing import Tuple
 import pandas as pd
 import streamlit as st
 
+from analytics import AnalyticsLib
+
 DATA_LOC = Path(__file__).parent / "data"
 
 ALL_CLIENTS = "All Clients"
@@ -24,8 +26,8 @@ def get_advisor_clientele_data(advisor: str) -> pd.DataFrame:
         parse_dates=[
             "client_date_opened",
             "account_open_date",
-            "account_inception_date"
-        ]
+            "account_inception_date",
+        ],
     )
     res = df[df.advisorid == advisor]
     return res
@@ -51,7 +53,9 @@ def aggregate_positions_upto_date(df: pd.DataFrame, upto_date) -> pd.DataFrame:
     agg = _df.groupby(["date"])["mv"].sum()
     results = agg.reset_index().sort_values(by=["date"])
     results.columns = ["date", "Market Value"]
-    results["Change from previous day"] = results["Market Value"] - results["Market Value"].shift(1)
+    results["Change from previous day"] = results["Market Value"] - results[
+        "Market Value"
+    ].shift(1)
     return results
 
 
@@ -63,7 +67,9 @@ def aggregate_positions_on_date(df: pd.DataFrame, on_date, level: str) -> pd.Dat
     return agg
 
 
-def get_aggregation_level(client: str = ALL_CLIENTS, account: str = ALL_ACCOUNTS) -> str:
+def get_aggregation_level(
+    client: str = ALL_CLIENTS, account: str = ALL_ACCOUNTS
+) -> str:
     if client == ALL_CLIENTS:
         return "client_name"
     else:
@@ -73,7 +79,19 @@ def get_aggregation_level(client: str = ALL_CLIENTS, account: str = ALL_ACCOUNTS
             return "securityid"
 
 
-def get_client_account_positions(df: pd.DataFrame, client: str = ALL_CLIENTS, account: str = ALL_ACCOUNTS):
+def get_object_count_at_aggregation_level(
+    df: pd.DataFrame, aggregation_level: str
+) -> int:
+    """Gets the unique number of values at a specific aggregation level eg.
+    If aggregation level is "client_name" then its the unique set of clients undr consideration.
+    If the aggregation level is "securityid" then it the unique set of positions,...
+    """
+    return len(set(df[aggregation_level]))
+
+
+def get_client_account_positions(
+    df: pd.DataFrame, client: str = ALL_CLIENTS, account: str = ALL_ACCOUNTS
+):
     if client == ALL_CLIENTS:
         return df.copy()
     else:
@@ -86,7 +104,7 @@ def get_client_account_positions(df: pd.DataFrame, client: str = ALL_CLIENTS, ac
 
 def get_date_market_value(df: pd.DataFrame, dte, cash=True):
     if cash:
-        date_df = df[(df.date == dte) & (df.securityid == 'Cash')]
+        date_df = df[(df.date == dte) & (df.securityid == "Cash")]
     else:
         date_df = df[(df.date == dte)]
     return sum(date_df.mv)
@@ -94,6 +112,23 @@ def get_date_market_value(df: pd.DataFrame, dte, cash=True):
 
 def get_inception_date(positions: pd.DataFrame):
     return positions.date.min().strftime("%Y-%m-%d")
+
+
+def get_analytics_ts(df: pd.DataFrame) -> pd.DataFrame:
+    return df[["date", "Market Value"]].set_index("date")
+
+
+def get_positions_summary(df: pd.DataFrame, aggr_level: str) -> pd.DataFrame:
+    anl_ts = get_analytics_ts(df)
+    summary_anls = AnalyticsLib().series_summary(anl_ts)
+    count_key_map = {
+        "client_name": "Clients",
+        "account_name": "Accounts",
+        "securityid": "Positions",
+    }
+    count_prompt = f"Number of {count_key_map[aggr_level]}"
+    summary_anls[count_prompt] = get_object_count_at_aggregation_level(df, aggr_level)
+    return pd.DataFrame.from_dict(summary_anls, orient="index")
 
 
 def get_prices():
