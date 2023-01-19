@@ -9,7 +9,7 @@ PARENT = Path(__file__).parent
 
 
 class Transaction:
-    class DNATable:
+    class DNATable:  # TODO: Add Fees to the mix
         SECURITY = {
             "buy": 1,
             "sell": -1,
