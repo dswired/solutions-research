@@ -46,7 +46,7 @@ class SeriesUtilities:
         sanitized_series = self.__sanitize_series(series)
         latest_date = sanitized_series.index.max()
         year_start = pd.to_datetime(f"{latest_date.year}-01-01")
-        idx = sanitized_series.index.get_indexer(year_start, method="nearest")[0]
+        idx = sanitized_series.index.get_indexer([year_start], method="nearest")[0]
         data_yr_start = sanitized_series.index[idx]
         return sanitized_series.loc[
             data_yr_start,
@@ -60,7 +60,7 @@ class SeriesUtilities:
     def get_series_previous_dt_value(self, series: pd.DataFrame) -> float:
         sanitized_series = self.__sanitize_series(series)
         previous_date = sanitized_series.index.max() - pd.DateOffset(1)
-        idx = sanitized_series.index.get_indexer(previous_date, method="ffill")[0]
+        idx = sanitized_series.index.get_indexer([previous_date], method="nearest")[0]
         data_prev_date = sanitized_series.index[idx]
         return sanitized_series.loc[
             data_prev_date,
