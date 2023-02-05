@@ -13,7 +13,7 @@ from data_processing import (
     get_aggregation_level,
     get_date_market_value,
     get_inception_date,
-    get_analytics_ts,
+    get_analytics_time_series,
 )
 
 from analytics import AnalyticsLib
@@ -83,7 +83,7 @@ def get_client_positions_from_top_summary(**opts):
             )
         )
 
-        anl_ts = get_analytics_ts(aggregated_positions_upto_selected_date)
+        anl_ts = get_analytics_time_series(aggregated_positions_upto_selected_date)
 
         st.session_state["input_date_min"] = anl_ts.index.min()
 
@@ -117,4 +117,5 @@ def get_client_positions_from_top_summary(**opts):
     return (
         aggregated_positions_upto_selected_date,
         aggregated_positions_on_selected_date,
+        anl_ts
     )

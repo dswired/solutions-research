@@ -36,8 +36,8 @@ def get_advisor_clientele_data(advisor: str) -> pd.DataFrame:
 @st.cache
 def get_advisor_data(advisor: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     positions = get_advisor_client_positions(advisor)
-    accounts = get_advisor_clientele_data(advisor)
-    return accounts, positions
+    clients = get_advisor_clientele_data(advisor)
+    return clients, positions
 
 
 def get_advisor_client_list(positions: pd.DataFrame) -> list:
@@ -114,20 +114,25 @@ def get_inception_date(positions: pd.DataFrame):
     return positions.date.min().strftime("%Y-%m-%d")
 
 
-def get_analytics_ts(df: pd.DataFrame) -> pd.DataFrame:
+def get_analytics_time_series(df: pd.DataFrame) -> pd.DataFrame:
     return df[["date", "Market Value"]].set_index("date")
 
 
-def get_positions_summary(df: pd.DataFrame, aggr_level: str) -> pd.DataFrame:
-    anl_ts = get_analytics_ts(df)
-    summary_anls = AnalyticsLib().series_summary(anl_ts)
+def get_positions_summary(
+    analytics_time_series: pd.DataFrame,
+    aggregated_positions_on_selected_date: pd.DataFrame,
+    aggr_level: str,
+) -> pd.DataFrame:
+    summary_anls = AnalyticsLib().series_summary(analytics_time_series)
     count_key_map = {
         "client_name": "Clients",
         "account_name": "Accounts",
         "securityid": "Positions",
     }
     count_prompt = f"Number of {count_key_map[aggr_level]}"
-    summary_anls[count_prompt] = get_object_count_at_aggregation_level(df, aggr_level)
+    summary_anls[count_prompt] = get_object_count_at_aggregation_level(
+        aggregated_positions_on_selected_date, aggr_level
+    )
     return pd.DataFrame.from_dict(summary_anls, orient="index")
 
 
@@ -135,5 +140,30 @@ def get_prices():
     ...
 
 
-def get_transactions():
-    ...
+@st.cache
+def get_transactions(clients: pd.DataFrame) -> pd.DataFrame:
+    trxs_file = DATA_LOC / "transactions.csv"
+    str_cols = ["accountid", "securityid"]
+    trx = pd.read_csv(
+        trxs_file, parse_dates=["trade_date"], dtype={_: str for _ in str_cols}
+    )
+    res = trx.merge(clients, how="left", on=["accountid"], validate="m:1")
+    return res[res.advisorid.notnull()].set_index(
+        "trade_date"
+    )  # crude way of selecting trxs only for the advisor!
+
+
+def filter_transactions(
+    trxs: pd.DataFrame, selected_client: str, selected_account: str
+) -> pd.DataFrame:
+    all_clients = selected_client == ALL_CLIENTS
+    all_accounts = selected_account == ALL_ACCOUNTS
+    if all_clients:
+        return trxs
+    elif all_accounts:
+        return trxs[trxs.client_name == selected_client]
+    else:
+        return trxs[
+            (trxs.account_name == selected_account)
+            & (trxs.client_name == selected_client)
+        ]
