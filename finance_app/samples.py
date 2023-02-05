@@ -28,3 +28,6 @@ class Samples:
         fig = get_time_series_plot(df, xaxis_value_name="DATE", yaxis_value_names={x: x for x in ["val1", "val2"]},
                                    title="Sample line plot")
         return fig  # Now ran with st.plotly_chart(fig, use_container_width=True)
+
+if __name__ == "__main__":
+    Samples().run_tracking()

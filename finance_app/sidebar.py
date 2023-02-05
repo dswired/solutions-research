@@ -10,8 +10,8 @@ APP_SIDEBAR_OPTIONS = [
 
 def sidebar(**opts):
     greeting = f"{time_greeting()} {opts['name']}!"
-    st.sidebar.title(greeting)
-    st.sidebar.title(APP_TITLE)
+    # st.sidebar.title(greeting)
+    # st.sidebar.title(APP_TITLE)
 
     st.sidebar.radio(
         'Manage Clients',

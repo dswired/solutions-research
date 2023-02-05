@@ -25,7 +25,7 @@ ANL = AnalyticsLib()
 
 
 def _top_summary_widths():
-    return [1.5, 1.5] + [1] * 7
+    return [1.5, 1.5] + [1] * 6
 
 
 def get_top_summary_cols():
@@ -33,7 +33,7 @@ def get_top_summary_cols():
 
 
 def get_client_positions_from_top_summary(**opts):
-    col1, col2, col3, col4, col5, col6, col7, col8, col9 = get_top_summary_cols()
+    col1, col2, col3, col4, col5, col6, col7, col9 = get_top_summary_cols()
 
     if "asof_date" not in st.session_state:
         st.session_state["asof_date"] = TODAY
@@ -95,17 +95,19 @@ def get_client_positions_from_top_summary(**opts):
         ytd_gain = ANL.get_ytd_gains(anl_ts, filter_date, ytd_cashflows=0)
         ytd_return = ANL.get_ytd_return(anl_ts, filter_date, ytd_cashflows=0)
 
-        col4.metric(label="Market Value (AsOf Date)", value=f"{date_mv:,.2f}")
-        col5.metric(label="Cash Balance (AsOf Date)", value=f"{date_cash:,.2f}")
+        col4.metric(label="Market Value", value=f"${date_mv:,.2f}")
+        col5.metric(label="Cash Balance", value=f"${date_cash:,.2f}")
         col6.metric(
-            label="Total Gain (YtD)", value=f"{ytd_gain:,.2f}", delta=GAIN_DELTA
+            label="Total Gain (YtD)", 
+            value=f"{ytd_gain:.2%}", 
+            delta=f"{GAIN_DELTA:.2%}"
         )
         col7.metric(
             label="Total Return (YtD)",
             value=f"{ytd_return:.2%}",
             delta=f"{RETURN_DELTA:.2%}",
         )
-        col8.metric(label="Inception Date", value=inception_date)
+        # col8.metric(label="Inception Date", value=inception_date)
         col9.date_input(
             "AsOf date",
             max_value=TODAY,

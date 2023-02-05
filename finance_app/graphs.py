@@ -27,23 +27,43 @@ def get_time_series_plot(
     fig = get_line_plot(df, xaxis_value_name, yaxis_value_names, title)
 
     fig.update_layout(
-        xaxis=dict(
-            rangeselector=dict(
-                buttons=list(
-                    [
-                        dict(count=3, label="3m", step="month", stepmode="backward"),
-                        dict(count=6, label="6m", step="month", stepmode="backward"),
-                        dict(count=1, label="YTD", step="year", stepmode="todate"),
-                        dict(count=1, label="1y", step="year", stepmode="backward"),
-                        dict(count=3, label="3y", step="year", stepmode="backward"),
-                        dict(step="all", label="Since Inception"),
-                    ]
-                )
-            ),
-            rangeslider=dict(visible=include_range_slider),
-            type="date",
-        )
+        margin=dict(l=5, r=5, t=5, b=5),
+        height=450,
+        plot_bgcolor="rgba(0,0,0,0)"
     )
+    fig.update_xaxes(
+        showline=True,
+        showgrid=False, 
+        linecolor='white',
+        rangeslider_visible=True,
+        # xaxis=dict(
+        rangeselector=dict(
+            buttons=list(
+                [
+                    dict(count=3, label="3m", step="month", stepmode="backward"),
+                    dict(count=6, label="6m", step="month", stepmode="backward"),
+                    dict(count=1, label="YTD", step="year", stepmode="todate"),
+                    dict(count=1, label="1y", step="year", stepmode="backward"),
+                    dict(count=3, label="3y", step="year", stepmode="backward"),
+                    dict(step="all", label="Since Inception"),
+                ]
+            ),
+            # font=list([dict(color="blue")])
+        ),
+        # rangeslider=dict(visible=include_range_slider),
+        type="date",
+    )
+    fig.update_yaxes(showgrid=True, 
+                     gridcolor="rgb(220,220,220)",
+                     nticks=5, 
+                     griddash="dot")
+    fig.update_traces(marker_color="rgb(0,38,100)")
+    fig.update_layout(xaxis_rangeselector_activecolor='darkslategrey',
+                      xaxis_rangeselector_font_color='black',
+                      xaxis_rangeselector_bgcolor='grey'
+                      )
+
+# )
     return fig
 
 
