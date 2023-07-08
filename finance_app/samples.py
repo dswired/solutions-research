@@ -14,7 +14,8 @@ class Samples:
     @staticmethod
     def run_tracking() -> None:
         posns = get_tracked_positions()
-        posns.to_csv("data/tracked_positions.csv", index=False)
+        savefile = PARENT / "data" / "tracked_positions.csv"
+        posns.to_csv(savefile, index=False)
 
     @staticmethod
     def generate_keys() -> None:
@@ -28,3 +29,7 @@ class Samples:
         fig = get_time_series_plot(df, xaxis_value_name="DATE", yaxis_value_names={x: x for x in ["val1", "val2"]},
                                    title="Sample line plot")
         return fig  # Now ran with st.plotly_chart(fig, use_container_width=True)
+
+
+if __name__ == "__main__":
+    Samples().run_tracking()

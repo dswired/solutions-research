@@ -4,6 +4,7 @@ from utils import time_greeting
 APP_TITLE = "Portfolio Management App"
 APP_SIDEBAR_OPTIONS = [
     "🕴️Manage Client Portfolios",
+    "Reports",
 
 ]
 
