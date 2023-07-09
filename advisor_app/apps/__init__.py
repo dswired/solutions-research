@@ -1,8 +1,3 @@
-from advisor_app.apps import (
-    monitor, reports
-)
+from apps import monitor, reports
 
-__all__ = [
-    "monitor",
-    "reports"
-]
+__all__ = ["monitor", "reports"]

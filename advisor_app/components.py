@@ -1,3 +1,5 @@
+import datetime
+
 import pandas as pd
 import streamlit as st
 from streamlit_option_menu import option_menu
@@ -27,21 +29,36 @@ def app_option_menu():
             },
             "nav-link-selected": {"background-color": "#0A5A81"},
         },
-        key="selected_choice"
+        key="selected_choice",
     )
     return app_menu
 
 
+def time_greeting():
+    now = datetime.datetime.now()
+    if now.hour < 12:
+        return "Good morning"
+    elif 12 <= now.hour < 18:
+        return "Good afternoon"
+    else:
+        return "Good evening"
+
+
+def get_greeting(name: str):
+    greeting = f"{time_greeting()} {name}!"
+    st.sidebar.title(greeting)
+
+
 def app_logo():
-    im = Image.open('images/app_logo.jpg')  # save this first
+    im = Image.open("images/app_logo.jpg")  # save this first
     st.image(im)
 
 
-def app_config():
+def app_config(layout="wide"):
     # im = Image.open('images/app_logo.jpg')
     st.set_page_config(
-        # layout='wide',
-        page_title='finance app',
+        layout=layout,
+        page_title="finance app",
         # page_icon=im,  # https://docs.streamlit.io/library/api-reference/utilities/st.set_page_config
     )
 
@@ -56,10 +73,7 @@ def display_dataframe(df: pd.DataFrame, interactive=True):
 
 
 def sidebar_options(options: list):
-    option = st.sidebar.selectbox(
-        "Select an option:",
-        options
-    )
+    option = st.sidebar.selectbox("Select an option:", options)
     return option
 
 
@@ -69,7 +83,7 @@ def app_hamburger():
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             footer:after {
-                    content:'Powered by d1g1t'; 
+                    content:'Powered by <Your Company Name here>';
                     visibility: visible;
                     display: block;
                     position: relative;
