@@ -103,7 +103,7 @@ celerybeat.pid
 *.sage.py
 
 # Environments
-.env
+finance_app/finance_app.env
 .venv
 env/
 venv/
