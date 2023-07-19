@@ -4,6 +4,7 @@ from typing import Tuple
 import pandas as pd
 import streamlit as st
 
+from samples import Samples
 from analytics import AnalyticsLib
 
 DATA_LOC = Path(__file__).parent / "data"
@@ -39,7 +40,7 @@ def get_advisor_clientele_data(advisor: str) -> pd.DataFrame:
     return res
 
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def get_advisor_data(advisor: str) -> Tuple[pd.DataFrame, pd.DataFrame]:
     positions = get_advisor_client_positions(advisor)
     clients = get_advisor_clientele_data(advisor)
@@ -173,3 +174,52 @@ def filter_transactions(
             (trxs.account_name == selected_account)
             & (trxs.client_name == selected_client)
         ]
+
+
+def get_benchmarks():
+    data_loc = DATA_LOC / "benchmark_values.csv"
+    fpk_loc = DATA_LOC / "benchmarks.csv"
+
+    fpks = pd.read_csv(fpk_loc, dtype=str)
+    data = pd.read_csv(data_loc, parse_dates=["date"])
+
+    return fpks, data
+
+
+def aggregate_account_positions(df: pd.DataFrame):
+    agg = df.groupby(["accountid", "date"])["mv"].sum()
+    results = agg.reset_index().sort_values(by=["date"])
+    return results
+
+
+def get_all_portfolio_periodic_returns(
+    portfolio_list: list, df: pd.DataFrame
+) -> pd.DataFrame:
+    returns_list = []
+    anl = AnalyticsLib
+    for portfolio in portfolio_list:
+        portfolio_df = df[df.accountid == portfolio, ["date", "mv"]]
+        ser = portfolio_df.set_index("date")
+        periodic_returns = anl.calculate_periodic_returns(ser)
+        ser_df = pd.DataFrame.from_dict(periodic_returns.items())
+        ser_df.columns = ["period", portfolio]
+        ser_df.set_index("period")
+        returns_list.append(ser_df)
+    returns_df = pd.concat(returns_list, axis=1)
+    return returns_df
+
+
+def get_compare_portfolios_returns_frame(
+    account_list: list,
+    benchmark_list: list,
+    agg_positions: pd.DataFrame,
+    benchmark_values: pd.DataFrame,
+):
+    if account_list:
+        cl_returns = get_all_portfolio_periodic_returns(account_list, agg_positions)
+    if benchmark_list:
+        bench_returns = get_all_portfolio_periodic_returns(
+            benchmark_list, benchmark_values
+        )
+    res = pd.concat([cl_returns, bench_returns], axis=1)
+    return res.reset_index()

@@ -8,6 +8,7 @@ from PIL import Image
 MAIN_MENU_MAP = {  # icons from https://icons.getbootstrap.com/
     "Monitor": "house-door-fill",
     "Reports": "book-half",
+    "Compare Portfolios": "list-task",
 }
 
 

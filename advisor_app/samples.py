@@ -1,7 +1,5 @@
 from pathlib import Path
 
-import pandas as pd
-
 from position_tracking import get_tracked_positions
 from app_authentication import generate_hashed_passwords
 

@@ -72,6 +72,14 @@ class SeriesUtilities:
         log_return = np.log(sorted_series / sorted_series.shift(-1))
         return log_return
 
+    def get_reindexed_series(self, series: pd.Series, freq: str = "D") -> pd.Series:
+        clean_series = self.__sanitize_series(series)
+        sorted_series = clean_series.sort_index()
+        start, end = sorted_series.index.min(), sorted_series.index.max()
+        reidx = pd.date_range(start, end, freq=freq)
+        res = sorted_series.reindex(reidx).fillna(method="ffill")
+        return res
+
 
 class AnalyticsLib(SeriesUtilities):
     def __init__(self):
@@ -218,3 +226,10 @@ class AnalyticsLib(SeriesUtilities):
         previous_dt_value = self.get_series_previous_dt_value(series)
         current_return = self.calculate_return(previous_dt_value, current_value)
         return current_value, current_return
+
+
+# if __name__ == "__main__":
+#     anl = AnalyticsLib()
+#     ser = pd.read_csv(r"G:\My Drive\Fin_Engineering\d1g1t-repo\solutions-research\advisor_app\data\anl_positions.csv", parse_dates=["date"]).set_index("date")
+#     #  anl.get_reindexed_series(ser, "D")
+#     anl.calculate_periodic_returns(ser)

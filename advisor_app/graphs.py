@@ -1,4 +1,4 @@
-from typing import Dict, Optional
+from typing import Dict, Optional, Union
 
 import pandas as pd
 from plotly import graph_objs as go
@@ -55,3 +55,16 @@ def get_pie_chart(
     fig = go.Figure(data=[go.Pie(labels=labels, values=values)])
     fig.update_layout(title=title)
     return fig
+
+
+def get_bar_chart(
+    df: pd.DataFrame, label_col: str, values_cols: list, title: Optional[str] = None
+):
+    data = [go.Bar(name=col, x=df[label_col], y=df[col]) for col in values_cols]
+    fig = go.Figure(data=data)
+    fig.update_layout(title=title)
+    return fig
+
+
+def get_scatter(df: pd.DataFrame, x_col: str, y_col: str, color: str = None):
+    ...

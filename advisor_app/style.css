@@ -12,3 +12,5 @@
 .plot-container>div {
     box-shadow: 0 0 3px #cccccc;
 }
+
+body {background-color: #cccccc;}
