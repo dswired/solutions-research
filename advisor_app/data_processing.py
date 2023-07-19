@@ -196,14 +196,14 @@ def get_all_portfolio_periodic_returns(
     portfolio_list: list, df: pd.DataFrame
 ) -> pd.DataFrame:
     returns_list = []
-    anl = AnalyticsLib
+    anl = AnalyticsLib()
     for portfolio in portfolio_list:
-        portfolio_df = df[df.accountid == portfolio, ["date", "mv"]]
+        portfolio_df = df.loc[df.accountid == portfolio, ["date", "mv"]]
         ser = portfolio_df.set_index("date")
         periodic_returns = anl.calculate_periodic_returns(ser)
         ser_df = pd.DataFrame.from_dict(periodic_returns.items())
         ser_df.columns = ["period", portfolio]
-        ser_df.set_index("period")
+        ser_df.set_index("period", inplace=True)
         returns_list.append(ser_df)
     returns_df = pd.concat(returns_list, axis=1)
     return returns_df
@@ -223,3 +223,4 @@ def get_compare_portfolios_returns_frame(
         )
     res = pd.concat([cl_returns, bench_returns], axis=1)
     return res.reset_index()
+

@@ -50,7 +50,7 @@ def run(name, username):
         accounts_list = list(set(positions["accountid"]))
 
         benchmark_info, benchmark_data = dp.get_benchmarks()
-        benchmark_fpks = list(set(benchmark_info.portfolios))
+        benchmark_fpks = list(set(benchmark_data["accountid"]))
 
         col1, col2, col3, col4 = st.columns([2, 2, 1, 1])
 

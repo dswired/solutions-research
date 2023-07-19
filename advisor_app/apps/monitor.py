@@ -10,11 +10,11 @@ from samples import Samples
 
 
 def run(name, username):
-    if "refresh" not in st.session_state:
-        st.session_state["refresh"] = True
-    if st.session_state.refresh:
-        with st.spinner("Refreshing positions..."):
-            Samples.run_tracking()
+    # if "refresh" not in st.session_state:
+    #     st.session_state["refresh"] = True
+    # if st.session_state.refresh:
+    #     with st.spinner("Refreshing positions..."):
+    #         Samples.run_tracking()
     with open("style.css") as f:
         st.markdown(f"<style>{f.read()}<style>", unsafe_allow_html=True)
 
