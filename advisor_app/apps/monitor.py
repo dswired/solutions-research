@@ -4,17 +4,17 @@ import data_processing as dp
 import graphs as gph
 from components import horizontal_rule
 import pandas as pd
+from samples import Samples
 
 # div.css-1offfwp.e16nr0p34
 
-theme_plotly = None
-
-
-def set_state():
-    ...
-
 
 def run(name, username):
+    if "refresh" not in st.session_state:
+        st.session_state["refresh"] = True
+    if st.session_state.refresh:
+        with st.spinner("Refreshing positions..."):
+            Samples.run_tracking()
     with open("style.css") as f:
         st.markdown(f"<style>{f.read()}<style>", unsafe_allow_html=True)
 
@@ -22,7 +22,6 @@ def run(name, username):
     advisor_clients = dp.get_advisor_client_list(positions)
     trxs = dp.get_transactions(clients)
 
-    st.write(st.session_state)
     with st.container():
         (
             aggregated_positions_upto_selected_date,
@@ -39,7 +38,7 @@ def run(name, username):
         yaxis_value_names={x: x for x in ["Market Value"]},
         title="Market Value Over Time.",
     )
-    st.plotly_chart(ts_line, use_container_width=True, theme=theme_plotly)
+    st.plotly_chart(ts_line, use_container_width=True)
 
     st.subheader("Exposure")
     col3, col4, col5 = st.columns([1, 1, 1])

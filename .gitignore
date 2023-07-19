@@ -104,6 +104,7 @@ celerybeat.pid
 
 # Environments
 finance_app/finance_app.env
+advisor_app/advisor_app.env
 .venv
 env/
 venv/

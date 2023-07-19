@@ -1,3 +1,3 @@
-from apps import monitor, reports
+from apps import monitor, reports, compareportfolios
 
-__all__ = ["monitor", "reports"]
+__all__ = ["monitor", "reports", "compareportfolios"]
