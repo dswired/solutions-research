@@ -219,6 +219,15 @@ class AnalyticsLib(SeriesUtilities):
         }
         return summary
 
+    def get_series_returns(
+        self, series: pd.DataFrame, cashflows: pd.DataFrame
+    ) -> pd.Series:
+        ...
+
+    def get_series_risk_return_map(self, series: pd.DataFrame):
+        inception_date = series.index.min()
+        since_inception_vol = self.get_series_period_volatility(inception_date, series)
+
     def series_current_summary(
         self, series: pd.DataFrame
     ) -> Tuple[float, float]:  # TODO: Add more if needed

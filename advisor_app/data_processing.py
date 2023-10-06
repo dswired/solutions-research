@@ -215,6 +215,7 @@ def get_compare_portfolios_returns_frame(
     agg_positions: pd.DataFrame,
     benchmark_values: pd.DataFrame,
 ):
+    cl_returns, bench_returns = pd.DataFrame(), pd.DataFrame()
     if account_list:
         cl_returns = get_all_portfolio_periodic_returns(account_list, agg_positions)
     if benchmark_list:
@@ -223,4 +224,3 @@ def get_compare_portfolios_returns_frame(
         )
     res = pd.concat([cl_returns, bench_returns], axis=1)
     return res.reset_index()
-

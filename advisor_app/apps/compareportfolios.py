@@ -47,10 +47,10 @@ def run(name, username):
 
         clients, positions = dp.get_advisor_data(username)
         agg_positions = dp.aggregate_account_positions(positions)
-        accounts_list = list(set(positions["accountid"]))
+        accounts_list = list(set(positions["accountid"])) or []
 
         benchmark_info, benchmark_data = dp.get_benchmarks()
-        benchmark_fpks = list(set(benchmark_data["accountid"]))
+        benchmark_fpks = list(set(benchmark_data["accountid"])) or []
 
         col1, col2, col3, col4 = st.columns([2, 2, 1, 1])
 
