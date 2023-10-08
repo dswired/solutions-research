@@ -9,3 +9,7 @@ numpy~=1.24.1
 jinja2
 pdfkit
 python-dotenv
+fasapi
+sqlalchemy
+uvicorn
+python-multipart
