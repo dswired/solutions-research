@@ -64,3 +64,22 @@ class Position(models.Model):
 
     class Meta:
         unique_together = ["account", "security", "date"]
+
+
+class EntityTrend(models.Model): ...
+
+
+class EntitySummary(models.Model): ...
+
+
+class NAVHistory(models.Model): ...
+
+
+class EntityExposure(models.Model):
+    # By Industry, By Sector
+    ...
+
+
+class EntityPerformance(models.Model):
+    # By Industry, By Sector
+    ...
