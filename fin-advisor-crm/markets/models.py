@@ -4,7 +4,7 @@ import constants as cons
 # Create your models here.
 class PublicCompanies(models.Model):
     """
-    Listed company descriptions
+    Information on listed companies.
     """
 
     # Fields
