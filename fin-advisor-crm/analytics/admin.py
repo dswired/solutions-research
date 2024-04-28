@@ -29,6 +29,13 @@ class PositionAdmin(admin.ModelAdmin):
     ordering = ["account", "security", "date"]
 
 
+class EntityTrendAdmin(admin.ModelAdmin):
+    list_display = ["entity", "date", "total_portfolio_value"]
+    search_fields = ["entity", "date"]
+    ordering = ["entity", "date"]
+
+
 admin.site.register(SecurityPrice, SecurityPriceAdmin)
 admin.site.register(Transaction, TransactionAdmin)
 admin.site.register(Position, PositionAdmin)
+admin.site.register(EntityTrend, EntityTrendAdmin)
