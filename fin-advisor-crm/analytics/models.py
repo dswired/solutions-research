@@ -72,6 +72,7 @@ class EntityTrend(models.Model):
     total_portfolio_value = models.DecimalField(
         max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
     )
+    date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
         return f"Position - {self.entity}|{self.date}"
