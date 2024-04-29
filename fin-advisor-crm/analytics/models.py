@@ -66,20 +66,16 @@ class Position(models.Model):
         unique_together = ["account", "security", "date"]
 
 
-class EntityTrend(models.Model): ...
+class EntityTrend(models.Model):
+    entity = models.CharField(max_length=const.CHARACTER_MAX_LENGTH)
+    date = models.DateField()
+    total_portfolio_value = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    date_created = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self) -> str:
+        return f"Position - {self.entity}|{self.date}"
 
-class EntitySummary(models.Model): ...
-
-
-class NAVHistory(models.Model): ...
-
-
-class EntityExposure(models.Model):
-    # By Industry, By Sector
-    ...
-
-
-class EntityPerformance(models.Model):
-    # By Industry, By Sector
-    ...
+    class Meta:
+        unique_together = ["entity", "date"]
