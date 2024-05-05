@@ -7,5 +7,6 @@ from django.contrib.auth.models import User
 # email=row["username"],
 # is_active=row["is_active"],
 
+
 def advisor(row: dict):
     User.objects.get_or_create(**row)
