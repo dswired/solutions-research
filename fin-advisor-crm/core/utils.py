@@ -3,4 +3,4 @@ def to_nullable_date(date: str) -> str:
 
 
 def to_bool(val: str) -> bool:
-    return True if val == "TRUE" else False
+    return val == "TRUE"
