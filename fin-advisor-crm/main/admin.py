@@ -11,7 +11,7 @@ class ClientAdmin(admin.ModelAdmin):
         "date_opened",
         "advisor",
     ]
-    search_fields = ["clientid", "advisor"]
+    search_fields = ["clientid", "advisor__username"]
     ordering = ["clientid"]
 
 

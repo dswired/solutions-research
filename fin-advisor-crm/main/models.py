@@ -10,6 +10,7 @@ class Client(models.Model):
     clientid = models.CharField(max_length=const.CHARACTER_MAX_LENGTH)
     name = models.CharField(max_length=const.CHARACTER_MAX_LENGTH)
     date_opened = models.DateField()
+    inception_date = models.DateField(null=True)
     client_type = models.CharField(
         choices=const.CLIENT_TYPE_CHOICES,
         max_length=const.CHARACTER_MAX_LENGTH,
@@ -18,6 +19,11 @@ class Client(models.Model):
     advisor = models.ForeignKey(User, on_delete=models.CASCADE)
     is_active = models.BooleanField(default=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.inception_date:
+            self.inception_date = self.date_opened
+        super(Client, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.clientid}"
@@ -31,9 +37,14 @@ class Account(models.Model):
     clientid = models.ForeignKey(Client, on_delete=models.CASCADE)
     account_name = models.CharField(max_length=const.CHARACTER_MAX_LENGTH)
     date_opened = models.DateField()
-    inception_date = models.DateField()
+    inception_date = models.DateField(null=True)
     is_active = models.BooleanField(default=True)
     date_created = models.DateTimeField(auto_now_add=True)
+
+    def save(self, *args, **kwargs):
+        if not self.inception_date:
+            self.inception_date = self.date_opened
+        super(Account, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"{self.accountid}"
