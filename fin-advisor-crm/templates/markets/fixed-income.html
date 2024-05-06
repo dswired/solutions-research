@@ -1,0 +1,23 @@
+{% extends "base.html" %}  
+{% block content %}
+<h1>Fixed Income Analytics</h1>
+
+<table>
+    <thead>
+        <tr>
+            <th>Symbol</th>
+            <th>Price</th>
+            <th>Change</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in equity_data %}
+        <tr>
+            <td>{{ item.symbol }}</td>
+            <td>{{ item.price|floatformat:2 }}</td>
+            <td>{{ item.change|floatformat:2 }}</td>  </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}
