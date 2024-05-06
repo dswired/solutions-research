@@ -1,5 +1,5 @@
-from django.contrib.auth.models import User
 from main.models import Account, Client
+from core.utils import to_bool, to_nullable_date
 
 
 def account(row: dict) -> None:
@@ -9,6 +9,6 @@ def account(row: dict) -> None:
         accountid=row["accountid"],
         account_name=row["name"],
         date_opened=row["open_date"],
-        inception_date=row["inception_date"],
-        is_active=bool(row["active_status"]),
+        inception_date=to_nullable_date(row["inception_date"]),
+        is_active=to_bool(row["active_status"]),
     )
