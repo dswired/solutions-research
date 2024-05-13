@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 from main.models import Account, Security
 import constants as const
@@ -69,13 +70,17 @@ class Position(models.Model):
 class EntityTrend(models.Model):
     entity = models.CharField(max_length=const.CHARACTER_MAX_LENGTH)
     date = models.DateField()
-    total_portfolio_value = models.DecimalField(
+    total_value = models.DecimalField(
         max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
     )
+    total_gain = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    advisor = models.ForeignKey(User, on_delete=models.CASCADE)
     date_created = models.DateTimeField(auto_now_add=True)
 
     def __str__(self) -> str:
-        return f"Position - {self.entity}|{self.date}"
+        return f"{self.entity}|{self.date}|{self.advisor.username}"
 
     class Meta:
-        unique_together = ["entity", "date"]
+        unique_together = ["entity", "date", "advisor"]
