@@ -30,8 +30,8 @@ class PositionAdmin(admin.ModelAdmin):
 
 
 class EntityTrendAdmin(admin.ModelAdmin):
-    list_display = ["entity", "date", "total_portfolio_value"]
-    search_fields = ["entity", "date"]
+    list_display = ["entity", "date", "total_value", "total_gain"]
+    search_fields = ["entity", "date", "advisor__username"]
     ordering = ["entity", "date"]
 
 
