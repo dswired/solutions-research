@@ -7,7 +7,7 @@ from django.core.management.base import CommandParser
 from core import loaders
 
 
-SUPPORTED_LOADERS = ["advisor", "client", "account", "entity_summary"]
+SUPPORTED_LOADERS = ["advisor", "client", "account", "entity_summary", "public_equities"]
 
 
 class Command(BaseCommand):
