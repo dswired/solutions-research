@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "core",
     "main",
     "analytics",
+    "markets",
 ]
 
 MIDDLEWARE = [
