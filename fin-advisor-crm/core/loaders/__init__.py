@@ -1,7 +1,7 @@
 from .advisor import advisor
 from .client import client
 from .account import account
-from .trend import entity_trend
+from .entity_trend import entity_trend
 from .public_equities import public_equities
 
 

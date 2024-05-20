@@ -2,14 +2,14 @@
     <!-- Content For Sidebar -->
     <div class="h-100">
         <div class="sidebar-logo">
-            <a href="#">Portfolio Manager</a>
+            <a href="#">{{greeting}}</a>
         </div>
         <ul class="sidebar-nav">
             <li class="sidebar-header">
                 Explore
             </li>
             <li class="sidebar-item">
-                <a href="#" class="sidebar-link">
+                <a href="{% url 'main-monitor' %}" class="sidebar-link">
                     <i class="fa-solid fa-building pe-2"></i>
                     Monitor Business
                 </a>

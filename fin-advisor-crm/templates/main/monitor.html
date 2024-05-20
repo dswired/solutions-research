@@ -1,153 +1,36 @@
 {% extends "base.html" %}
+{% load static %}
 {% block title %}Monitor Business{% endblock  %}
 {% block content %}
-    <div class="row p-3">
+    <div class="row p-1">
         <div class="col-md-10">
-            <h3>Monitor</h3>
         </div>
         <div class="col-md-2">
-            <p><span><strong>AsOf: </strong><input type="date" value="2023-01-01"></span></p>
+            <p><span><strong>AsOf: </strong><input type="date" value="{{asof}}"></span></p>
         </div>
     </div>
+
     <section>
+        <div class="p-1">
+            {% include "partials/entity_summary_cards.html" %}
+        </div>
 
-        <div class="row px-3 py-3">
-            <div class="col-xl-3"> 
-                <div class="card">
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col">
-                                <h5 class="card-title text-muted mb-0">Market Value</h5>
-                                <span class="h2 mb-0">2,356</span>
-                            </div>
-                            <div class="col-auto">
-                                <div class="">
-                                    <h2><i class="fa-solid fa-money-bill"></i></h2>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-xl-3 col-sm-6 col-12">
-              <div class="card">
-                <div class="card-content">
-                  <div class="card-body">
-                    <div class="media d-flex">
-                      <div class="align-self-center">
-                        <i class="icon-speech warning font-large-2 float-left"></i>
-                      </div>
-                      <div class="media-body text-right">
-                        <h3>156</h3>
-                        <span>New Comments</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-3 col-sm-6 col-12">
-              <div class="card">
-                <div class="card-content">
-                  <div class="card-body">
-                    <div class="media d-flex">
-                      <div class="align-self-center">
-                        <i class="icon-graph success font-large-2 float-left"></i>
-                      </div>
-                      <div class="media-body text-right">
-                        <h3>64.89 %</h3>
-                        <span>Bounce Rate</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="col-xl-3 col-sm-6 col-12">
-              <div class="card">
-                <div class="card-content">
-                  <div class="card-body">
-                    <div class="media d-flex">
-                      <div class="align-self-center">
-                        <i class="icon-pointer danger font-large-2 float-left"></i>
-                      </div>
-                      <div class="media-body text-right">
-                        <h3>423</h3>
-                        <span>Total Visits</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        <div class="row px-3 py-3">
+        <div class="row p-1">
             <div class="col-md-8">
-                <div class="card shadow-sm">
+                <div class="card shadow">
                     <div class="card-body">
-                        <h5 class="card-title">Market Value</h5>
-                        <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
+                        <canvas id="marketValueTrend"></canvas>
                     </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-header">Summary</div>
+                <div class="card shadow">
                     <div class="card-body">
-                        <h5 class="card-title">Light card title</h5>
-                        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                        <canvas id="allocationSummary"></canvas>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-    <section class="px-3 py-3">
-        <div class="card border-none">
-            <div class="container-fluid">
-                <div class="p-2">
-                    <h4>Exposure</h4>
-                </div>
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="card p-1">
-                            <div class="card-header">Client</div>
-                            <div class="card-body">
-                                <h5 class="card-title">Special title treatment</h5>
-                                <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                                <a href="#" class="btn btn-primary">Go somewhere</a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="card p-1">
-                            <div class="card-header">Asset Class</div>
-                            <div class="card-body">
-                                <h5 class="card-title">Light card title</h5>
-                                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-    <section class="px-3 py-3">
-        <div class="card shaodow-sm">
-            <div class="container-fluid">
-                <div class="p-2">
-                    <h4>Net Asset Value History</h4>
-                </div>
-                <div class="col-md-12">
-                    <div class="card p-1 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">Special title treatment</h5>
-                            <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-                            <a href="#" class="btn btn-primary">Go somewhere</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-{% endblock%}
+    <script src="{% static 'js/graphs.js' %}"></script>
+{% endblock content %}
