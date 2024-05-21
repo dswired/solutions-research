@@ -34,3 +34,20 @@ new Chart(document.getElementById("allocationSummary"), {
         ]
     }
 });
+
+// Generic data retrieval from endpoint
+const getChartData = (endPoint) => {
+    console.log("Fetching data from"+ endPoint);
+    fetch("/"+endPoint)
+        .then((response) => response.json())
+        .then((results) => {
+            console.log("results", results)
+            return results
+        })
+};
+
+// Generic chart function
+const renderChart = (elementID, endPoint, chartType) => {
+    var ctx = document.getElementById(elementID);
+
+}

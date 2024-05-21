@@ -23,9 +23,9 @@ def entity_allocation(request):
     """Entity allocation data endpoint."""
     allocation_data = {
         "Alternatives": 1200,
-        "Equities": 4500,
+        "Equities": 2790,
         "Fixed Income": 2970,
-        "Other": 616,
+        "Other": 755,
     }
     return JsonResponse({"entity_allocation_data": allocation_data}, safe=False)
 
