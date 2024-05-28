@@ -1,23 +1,29 @@
-{% extends "base.html" %}  
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Equities{% endblock  %}
 {% block content %}
-<h1>Equity Analytics</h1>
+    <div class="row p-1">
+        <div class="col-md-10">
+        </div>
+        <div class="col-md-2">
+            <p><span><strong>AsOf: </strong><input type="date" value="{{asof}}"></span></p>
+        </div>
+    </div>
 
-<table>
-    <thead>
-        <tr>
-            <th>Symbol</th>
-            <th>Price</th>
-            <th>Change</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for item in equity_data %}
-        <tr>
-            <td>{{ item.symbol }}</td>
-            <td>{{ item.price|floatformat:2 }}</td>
-            <td>{{ item.change|floatformat:2 }}</td>  </tr>
-        {% endfor %}
-    </tbody>
-</table>
+    <section>
+        <div class="p-1">
+            {% include "partials/markets_summary_cards.html" %}
+        </div>
 
-{% endblock %}
+        <div class="row p-1">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <canvas id="marketValueTrend"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="{% static 'js/graphs.js' %}"></script>
+{% endblock content %}
