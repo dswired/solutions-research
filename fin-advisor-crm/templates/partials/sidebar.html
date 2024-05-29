@@ -32,12 +32,6 @@
                 </a>
             </li>
             <li class="sidebar-item">
-                <a href="{% url 'logout' %}" method="post" class="sidebar-link">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    Log Out
-                </a>
-            </li>
-            <li class="sidebar-item">
                 <a href="#" class="sidebar-link collapsed" data-bs-target="#pages" data-bs-toggle="collapse"
                     aria-expanded="false"><i class="fa-solid fa-people-roof pe-2"></i>
                     Financial Markets
@@ -53,7 +47,13 @@
                         <a href="#" class="sidebar-link">Currencies</a>
                     </li>
                 </ul>
-            </li>            
+            </li> 
+            <li class="sidebar-item">
+                <a href="{% url 'logout' %}" method="post" class="sidebar-link">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    Log Out
+                </a>
+            </li>           
         </ul>
     </div>
 </aside>
