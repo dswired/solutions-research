@@ -1,6 +1,7 @@
 from django.urls import path
-from markets import views
+from . import views
 
 urlpatterns = [
-    path("", views.equities, name="equities")
+    path("", views.equities, name="equities"),
+    path("equity_trend", views.equity_trend, name="equity_trend"),
 ]
