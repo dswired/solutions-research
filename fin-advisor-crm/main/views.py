@@ -24,6 +24,7 @@ def index(request):
     context = get_summary_card_info(request)
     return render(request, "main/monitor.html", context=context)
 
+
 def entity_allocation(request):
     """Entity allocation data endpoint."""
     data = {
