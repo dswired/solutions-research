@@ -19,18 +19,54 @@ def get_summary_card_info(request):
     }
 
 
-def entity_allocation(request):
-    """Entity allocation data endpoint."""
-    allocation_data = {
-        "Alternatives": 1200,
-        "Equities": 2790,
-        "Fixed Income": 2970,
-        "Other": 755,
-    }
-    return JsonResponse({"entity_allocation_data": allocation_data}, safe=False)
-
-
 @login_required(login_url="/authentication/login")
 def index(request):
     context = get_summary_card_info(request)
     return render(request, "main/monitor.html", context=context)
+
+def entity_allocation(request):
+    """Entity allocation data endpoint."""
+    data = {
+        "Alternatives": 1250,
+        "Equities": 2790,
+        "Fixed Income": 2970,
+        "Other": 755,
+    }
+    config = {
+        "type": "doughnut",
+        "data": {
+            "labels": list(data.keys()),
+            "datasets": [
+                {
+                    "label": "Portfolio Allocation",
+                    "backgroundColor": [
+                        "rgba(255, 99, 132, 0.5)",
+                        "rgba(54, 162, 235, 0.5)",
+                        "rgba(75, 192, 192, 0.5)",
+                        "#e8c3b9",
+                    ],
+                    "data": list(data.values()),
+                }
+            ],
+        },
+    }
+    return JsonResponse(config)
+
+
+def entity_trend(request):
+    """Entity trend data endpoint."""
+    config = {
+        "type": "line",
+        "data": {
+            "labels": [1500, 1600, 1700, 1750, 1800, 1850, 1900, 1950, 1999, 2050],
+            "datasets": [
+                {
+                    "data": [282, 350, 411, 502, 635, 809, 947, 1402, 3700, 5267],
+                    "label": "Market Value",
+                    "borderColor": "#4682B4",
+                    "fill": True,
+                }
+            ],
+        },
+    }
+    return JsonResponse(config)
