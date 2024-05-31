@@ -2,13 +2,17 @@ from datetime import datetime
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest
 
 from .models import Client
 from core.utils import get_current_time_greeting
 
+def get_current_trend_values(request):
+    dte = request.asof
+    ...
 
-def get_summary_card_info(request):
+
+def get_summary_card_info(request:HttpRequest):
     return {
         "value": "423,177.23",
         "gain": "98,129",
@@ -20,12 +24,13 @@ def get_summary_card_info(request):
 
 
 @login_required(login_url="/authentication/login")
-def index(request):
+def index(request: HttpRequest):
+    print(dir(request))
     context = get_summary_card_info(request)
     return render(request, "main/monitor.html", context=context)
 
 
-def entity_allocation(request):
+def entity_allocation(request: HttpRequest):
     """Entity allocation data endpoint."""
     data = {
         "Alternatives": 1250,
