@@ -7,25 +7,27 @@ from django.http import JsonResponse, HttpRequest
 from .models import Client
 from core.utils import get_current_time_greeting
 
+
 def get_current_trend_values(request):
     dte = request.asof
     ...
 
 
-def get_summary_card_info(request:HttpRequest):
+def get_summary_card_info(request: HttpRequest):
+
+    today = datetime.today().strftime("%Y-%m-%d")
     return {
         "value": "423,177.23",
         "gain": "98,129",
         "return": "4.77",
         "fees": "29,000",
-        "asof": datetime.today().strftime("%Y-%m-%d"),
+        "asof": request.POST.get("AsOfDate", today),
         "greeting": f"{get_current_time_greeting()} {request.user.first_name}!",
     }
 
 
 @login_required(login_url="/authentication/login")
 def index(request: HttpRequest):
-    print(dir(request))
     context = get_summary_card_info(request)
     return render(request, "main/monitor.html", context=context)
 

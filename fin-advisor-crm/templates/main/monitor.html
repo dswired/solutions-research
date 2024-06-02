@@ -7,7 +7,17 @@
             <h4 class="mt-4 font-weight-bold text-muted">Monitor</h4>
         </div>
         <div class="col-md-2">
-            <p><span><strong>AsOf: </strong><input type="date" value="{{asof}}"></span></p>
+            <p>
+                <span>
+                    <strong>
+                        AsOf: 
+                    </strong>
+                    <form action="" method="POST" id="AsOfDateInputForm">
+                        {% csrf_token %}
+                        <input type="date" name="AsOfDate" value="{{asof}}" id="AsOfDate">
+                    </form>
+                </span>
+            </p>
         </div>
     </div>
 
