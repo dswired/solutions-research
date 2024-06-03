@@ -10,4 +10,5 @@ function loadChart(elementId, endPoint) {
 }
 
 loadChart('marketValueTrend', '/main/entity_trend')
-loadChart('allocationSummary','/main/entity_allocation')
+loadChart('allocationSummary', '/main/entity_allocation')
+loadChart('equityPriceTrend', '/equities/equity_trend')
