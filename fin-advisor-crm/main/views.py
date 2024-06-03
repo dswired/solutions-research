@@ -2,30 +2,43 @@ from datetime import datetime
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpRequest
+from django.db.models import Q
 
-from .models import Client
+from analytics.models import EntityTrend
 from core.utils import get_current_time_greeting
 
 
-def get_summary_card_info(request):
+def get_trend_history(request: HttpRequest):
+    advisor_filter = Q(advisor__username=request.user.username) & Q(
+        entity=request.user.username
+    )
+    if not request.POST.get("AsOfDate"):
+        return EntityTrend.objects.filter(advisor_filter)
+    date_filter = Q(date__lte=request.POST["AsOfDate"])
+    return EntityTrend.objects.filter(advisor_filter & date_filter)
+
+
+def get_summary_card_info(request: HttpRequest):
+    today = datetime.today().strftime("%Y-%m-%d")
+    trend = get_trend_history(request).latest("date")
     return {
-        "value": "423,177.23",
-        "gain": "98,129",
+        "value": trend.total_value,
+        "gain": trend.total_gain,
         "return": "4.77",
         "fees": "29,000",
-        "asof": datetime.today().strftime("%Y-%m-%d"),
+        "asof": request.POST.get("AsOfDate", today),
         "greeting": f"{get_current_time_greeting()} {request.user.first_name}!",
     }
 
 
 @login_required(login_url="/authentication/login")
-def index(request):
+def index(request: HttpRequest):
     context = get_summary_card_info(request)
     return render(request, "main/monitor.html", context=context)
 
 
-def entity_allocation(request):
+def entity_allocation(request: HttpRequest):
     """Entity allocation data endpoint."""
     data = {
         "Alternatives": 1250,
@@ -56,13 +69,16 @@ def entity_allocation(request):
 
 def entity_trend(request):
     """Entity trend data endpoint."""
+    trend = get_trend_history(request)
+    dates = [t.date for t in trend]
+    values = [t.total_value for t in trend]
     config = {
         "type": "line",
         "data": {
-            "labels": [1500, 1600, 1700, 1750, 1800, 1850, 1900, 1950, 1999, 2050],
+            "labels": dates,
             "datasets": [
                 {
-                    "data": [282, 350, 411, 502, 635, 809, 947, 1402, 3700, 5267],
+                    "data": values,
                     "label": "Market Value",
                     "borderColor": "#4682B4",
                     "fill": True,

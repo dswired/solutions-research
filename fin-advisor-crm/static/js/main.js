@@ -11,3 +11,9 @@ navLinkEls.forEach(navLinkEl => {
         navLinkEl.classList.add('activated');
     });
 });
+
+
+const asOfDate = document.querySelector('#AsOfDate');
+asOfDate.addEventListener("change", function () {
+    document.querySelector('#AsOfDateInputForm').submit();
+});

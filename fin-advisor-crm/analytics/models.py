@@ -84,3 +84,4 @@ class EntityTrend(models.Model):
 
     class Meta:
         unique_together = ["entity", "date", "advisor"]
+        ordering = ["entity", "date"]
