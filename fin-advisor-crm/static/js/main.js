@@ -17,3 +17,7 @@ const asOfDate = document.querySelector('#AsOfDate');
 asOfDate.addEventListener("change", function () {
     document.querySelector('#AsOfDateInputForm').submit();
 });
+
+new Autocomplete('#autocomplete', {
+    
+});

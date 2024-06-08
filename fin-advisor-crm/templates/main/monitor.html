@@ -2,21 +2,22 @@
 {% load static %}
 {% block title %}Monitor Business{% endblock  %}
 {% block content %}
-    <div class="row p-1">
-        <div class="col-md-10">
-            <h4 class="mt-4 font-weight-bold text-muted">Monitor</h4>
+    <div class="row p-1 mt-4">
+        <div class="col-md-2">
+            <h4 class="font-weight-bold text-muted">Monitor</h4>
+        </div>
+        <div class="col-md-8">
+            <div id="autocomplete" class="autocomplete">
+                <input class="autocomplete-input" />
+                <ul class="autocomplete-result-list"></ul>
+            </div>
         </div>
         <div class="col-md-2">
             <p>
-                <span>
-                    <strong>
-                        AsOf: 
-                    </strong>
-                    <form action="" method="POST" id="AsOfDateInputForm">
-                        {% csrf_token %}
-                        <input type="date" name="AsOfDate" value="{{asof}}" id="AsOfDate">
-                    </form>
-                </span>
+                <form action="" method="POST" id="AsOfDateInputForm">
+                    {% csrf_token %}
+                    <input type="date" name="AsOfDate" value="{{asof}}" id="AsOfDate">
+                </form>
             </p>
         </div>
     </div>

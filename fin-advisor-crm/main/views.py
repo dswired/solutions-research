@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpRequest
 from django.db.models import Q
 
+from .models import Client
 from analytics.models import EntityTrend
 from core.utils import get_current_time_greeting
 
@@ -67,7 +68,7 @@ def entity_allocation(request: HttpRequest):
     return JsonResponse(config)
 
 
-def entity_trend(request):
+def entity_trend(request: HttpRequest):
     """Entity trend data endpoint."""
     trend = get_trend_history(request)
     dates = [t.date for t in trend]
@@ -87,3 +88,19 @@ def entity_trend(request):
         },
     }
     return JsonResponse(config)
+
+
+def search_clients(request: HttpRequest):
+    # /search/?client=
+    clientid = request.GET.get("client")
+    payload = []
+
+    if clientid:
+        client_filter = Q(advisor__username=request.user.username) & Q(
+            clientid__icontains=clientid
+        )
+        client_objects = Client.objects.filter(client_filter)
+
+        for client_object in client_objects:
+            payload.append(client_object.clientid)
+    return JsonResponse({"data": payload})
