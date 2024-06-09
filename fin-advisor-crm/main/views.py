@@ -90,7 +90,7 @@ def entity_trend(request: HttpRequest):
     return JsonResponse(config)
 
 
-def search_clients(request: HttpRequest):
+def search(request: HttpRequest):
     # /search/?client=
     clientid = request.GET.get("client")
     payload = []
