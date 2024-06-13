@@ -2,23 +2,15 @@
 {% load static %}
 {% block title %}Monitor Business{% endblock  %}
 {% block content %}
-    <div class="row p-1 mt-4">
+    <div class="row m-4">
         <div class="col-md-2">
-            <h4 class="font-weight-bold text-muted">Monitor</h4>
+            <h3 class="font-weight-bold text-muted">Monitor</h3>
         </div>
         <div class="col-md-8">
-            <div id="autocomplete" class="autocomplete">
-                <input class="autocomplete-input" />
-                <ul class="autocomplete-result-list"></ul>
-            </div>
+            {% include "partials/client-autocomplete.html" %}
         </div>
-        <div class="col-md-2">
-            <p>
-                <form action="" method="POST" id="AsOfDateInputForm">
-                    {% csrf_token %}
-                    <input type="date" name="AsOfDate" value="{{asof}}" id="AsOfDate">
-                </form>
-            </p>
+        <div class="col-md-2 align-content-end">
+            {% include "partials/asof-date-selector.html" %}
         </div>
     </div>
 
@@ -42,26 +34,6 @@
                 </div>
             </div>
         </div>
-    </section>
-    <section>
-        <div class="row">
-            <div class="dropdown-menu show" id="list-tab" role="tablist">
-              <h4 class="dropdown-header"> Lorem Ipsum </h4>
-              </br>
-              <a class="dropdown-item active" id="list-who-list" data-toggle="list" href="#list-who" role="tab" aria-controls="who">dolor sit amet quo te</a>
-              <a class="dropdown-item" id="list-info-list" data-toggle="list" href="#list-info" role="tab" aria-controls="info">lorem prompta deseruisse</a>
-              </br>
-              <h4 class="dropdown-header"> Mei ipsum neglegentur ex</h4>
-              </br>
-              <a class="dropdown-item" id="list-contact-list" data-toggle="list" href="#list-contact" role="tab" aria-controls="contact">est probo</a>
-              <a class="dropdown-item" id="list-where-list" data-toggle="list" href="#list-where" role="tab" aria-controls="where">nusquam eu</a>
-              </br>
-              <h4 class="dropdown-header"> Quo solum soleat</h4>
-              </br>
-              <a class="dropdown-item" id="list-get-list" data-toggle="list" href="#list-get" role="tab" aria-controls="get">adversarium id</a>
-              <a class="dropdown-item" id="list-send-list" data-toggle="list" href="#list-send" role="tab" aria-controls="send">qui ex minim discere</a>
-          </div>
-        </div>  
     </section>
     <script src="{% static 'js/graphs.js' %}"></script>
 {% endblock content %}

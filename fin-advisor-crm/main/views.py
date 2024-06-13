@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpRequest
 from django.db.models import Q
+from django.contrib import messages
 
 from .models import Client
 from analytics.models import EntityTrend
@@ -103,4 +104,12 @@ def search(request: HttpRequest):
 
         for client_object in client_objects:
             payload.append(client_object.clientid)
-    return JsonResponse({"data": payload})
+    return JsonResponse({"status": 200, "data": payload})
+
+
+def single_client(request):
+    if request.method == "POST":
+        clientid = request.POST["selected_client"]
+        client = Client.objects.get(clientid=clientid)
+        messages.info(request, f"You selected {client.name} in POST")
+        return render(request, "main/single-client.html")

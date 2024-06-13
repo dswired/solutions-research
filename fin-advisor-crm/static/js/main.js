@@ -14,7 +14,7 @@ navLinkEls.forEach(navLinkEl => {
 
 
 const asOfDate = document.querySelector('#AsOfDate');
-asOfDate.addEventListener("change", function () {
+asOfDate?.addEventListener("change", function () {
     document.querySelector('#AsOfDateInputForm').submit();
 });
 
@@ -25,9 +25,11 @@ new Autocomplete('#autocomplete', {
             fetch(url)
             .then(response => response.json())
             .then(data => {
-                console.log(data)
                 resolve(data.data)
             })
         })
+    },
+    onSubmit : result => {
+        document.querySelector("#ClientSelectForm").submit();
     }
 });

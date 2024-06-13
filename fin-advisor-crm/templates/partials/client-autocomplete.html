@@ -1,0 +1,7 @@
+<form action="{% url 'main-singleclient' %}" method="post" id="ClientSelectForm">
+    {% csrf_token %}
+    <div id="autocomplete" class="autocomplete">
+        <input class="autocomplete-input" name="selected_client">
+        <ul class="autocomplete-result-list"></ul>
+    </div>
+</form>
