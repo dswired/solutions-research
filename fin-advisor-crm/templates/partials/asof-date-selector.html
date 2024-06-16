@@ -1,0 +1,4 @@
+<form action="{% url "main-monitor" %}" method="POST" id="AsOfDateInputForm">
+    {% csrf_token %}
+    <input type="date" name="AsOfDate" value="{{asof}}" id="AsOfDate">
+</form>

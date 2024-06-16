@@ -23,7 +23,7 @@ class AccountAdmin(admin.ModelAdmin):
         "date_opened",
         "is_active",
     ]
-    search_fields = ["accountid", "clientid"]
+    search_fields = ["accountid", "clientid__clientid"]
     ordering = ["accountid", "clientid"]
 
 
