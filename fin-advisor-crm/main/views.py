@@ -118,29 +118,30 @@ def search(request: HttpRequest):
             payload.append(client_object.clientid)
     return JsonResponse({"status": 200, "data": payload})
 
-def get_entity_dropdown_items(
-        client: Client, accounts: List[Account], selected_entity: str = None
-    ) -> list:
-        '''Helper function to retrieve all dropdown items and keep selected_entity as first item.'''
-        # client_name = client.name
-        # if selected_entity:
-        #     items = [selected_entity, f"{client_name} ({client.clientid})"]
-        # else:
-        #     items = [f"{client_name} ({client.clientid})"]
 
-        # for account in accounts:
-        #     entity_display_name = f"{client_name} | {account.account_name} ({account.accountid})"
-        #     if entity_display_name == selected_entity:
-        #         continue
-        #     items.append(entity_display_name)
-        items = [client.clientid]
-        for account in accounts:
-            if account.accountid == selected_entity:
-                continue
-            items.append(account.accountid)
-        if selected_entity:
-            items.insert(0, selected_entity)
-        return items
+def get_entity_dropdown_items(
+    client: Client, accounts: List[Account], selected_entity: str = None
+) -> list:
+    """Helper function to retrieve all dropdown items and keep selected_entity as first item."""
+    # client_name = client.name
+    # if selected_entity:
+    #     items = [selected_entity, f"{client_name} ({client.clientid})"]
+    # else:
+    #     items = [f"{client_name} ({client.clientid})"]
+
+    # for account in accounts:
+    #     entity_display_name = f"{client_name} | {account.account_name} ({account.accountid})"
+    #     if entity_display_name == selected_entity:
+    #         continue
+    #     items.append(entity_display_name)
+    items = [client.clientid]
+    for account in accounts:
+        if account.accountid == selected_entity:
+            continue
+        items.append(account.accountid)
+    if selected_entity:
+        items.insert(0, selected_entity)
+    return items
 
 
 def single_client(request):
