@@ -1,5 +1,4 @@
 const sidebarToggle = document.querySelector("#sidebar-toggle");
-
 sidebarToggle.addEventListener("click", function () {
     document.querySelector("#sidebar").classList.toggle("collapsed");
 });
@@ -16,6 +15,13 @@ navLinkEls.forEach(navLinkEl => {
 const asOfDate = document.querySelector('#AsOfDate');
 asOfDate?.addEventListener("change", function () {
     document.querySelector('#AsOfDateInputForm').submit();
+});
+
+const selectedAccount = document.querySelector('#SelecetedAccount');
+selectedAccount?.addEventListener("change", function () {
+    document.querySelector('#AccountSelectForm').submit();
+    //const selectedAccountOptions = 
+    consolge.log(selectedAccount.value);
 });
 
 new Autocomplete('#autocomplete', {

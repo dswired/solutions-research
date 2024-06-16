@@ -2,5 +2,46 @@
 {% load static %}
 {% block title %}{{client.name}}{% endblock %}
 {% block content %}
-    {% include "partials/messages.html" %}
+
+    <div class="row m-4">
+        <div class="col-md-6">
+            <form action="{% url 'main-singleclient' %}" method="POST" id="AccountSelectForm">
+                {% csrf_token %}
+                <select class="form-select" name="selected_entity" id="SelecetedAccount">
+                    {% for item in dropdown_items %}
+                        <option value="{{item}}">{{item}}</option>
+                    {% endfor %}
+                </select>
+            </form>
+        </div>
+        <div class="col-md-4">
+        </div>
+        <div class="col-md-2 align-content-end">
+            {% include "partials/asof-date-selector.html" %}
+        </div>
+    </div>
+
+    <section>
+        <div class="p-1">
+            {% include "partials/entity_summary_cards.html" %}
+        </div>
+
+        <div class="row p-1">
+            <div class="col-md-8">
+                <div class="card shadow">
+                    <div class="card-body" style="height: 550px">
+                        <canvas id="marketValueTrend"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card shadow">
+                    <div class="card-body" style="height: 550px">
+                        <canvas id="allocationSummary"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <script src="{% static 'js/graphs.js' %}"></script> {% endcomment %}
 {% endblock content %}
