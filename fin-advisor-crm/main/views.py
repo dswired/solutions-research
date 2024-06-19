@@ -29,19 +29,18 @@ def get_trend_history(request: HttpRequest):
         date_filter = Q(date__lte=request.POST["AsOfDate"])
         final_filter = advisor_filter & entity_filter & date_filter
     res = EntityTrend.objects.filter(final_filter)
-    print(f"Trend: {[(t.date, t.total_value) for t in res]}")
     return res
 
 
 def get_summary_card_info(request: HttpRequest):
-    today = datetime.today().strftime("%Y-%m-%d")
     trend = get_trend_history(request).latest("date")
+    asof_date = trend.date.strftime('%Y-%m-%d')
     return {
         "value": trend.total_value,
         "gain": trend.total_gain,
         "return": "4.77",
         "fees": "29,000",
-        "asof": request.POST.get("AsOfDate", today),
+        "asof": request.POST.get("AsOfDate", asof_date),
         "greeting": f"{get_current_time_greeting()} {request.user.first_name}!",
     }
 
@@ -123,30 +122,18 @@ def get_entity_dropdown_items(
     client: Client, accounts: List[Account], selected_entity: str = None
 ) -> list:
     """Helper function to retrieve all dropdown items and keep selected_entity as first item."""
-    # client_name = client.name
-    # if selected_entity:
-    #     items = [selected_entity, f"{client_name} ({client.clientid})"]
-    # else:
-    #     items = [f"{client_name} ({client.clientid})"]
-
-    # for account in accounts:
-    #     entity_display_name = f"{client_name} | {account.account_name} ({account.accountid})"
-    #     if entity_display_name == selected_entity:
-    #         continue
-    #     items.append(entity_display_name)
-    items = [client.clientid]
+    items = [client.clientid] if selected_entity != client.clientid else [selected_entity]
     for account in accounts:
         if account.accountid == selected_entity:
             continue
         items.append(account.accountid)
-    if selected_entity:
+    if selected_entity and selected_entity != client.clientid:
         items.insert(0, selected_entity)
     return items
 
 
 def single_client(request):
     if request.method == "POST":
-
         if "selected_entity" in request.POST:
             selected_entity = request.POST["selected_entity"]
             try:
