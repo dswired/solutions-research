@@ -1,11 +1,9 @@
-from datetime import datetime
 from typing import List
 
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse, HttpRequest
 from django.db.models import Q
-from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 
 from .models import Client, Account
@@ -28,78 +26,52 @@ def get_trend_history(request: HttpRequest):
     else:
         date_filter = Q(date__lte=request.POST["AsOfDate"])
         final_filter = advisor_filter & entity_filter & date_filter
-    res = EntityTrend.objects.filter(final_filter)
-    return res
+    return EntityTrend.objects.filter(final_filter)
 
 
-def get_summary_card_info(request: HttpRequest):
-    trend = get_trend_history(request).latest("date")
-    asof_date = trend.date.strftime('%Y-%m-%d')
+def get_allocation_info(request: HttpRequest):
     return {
-        "value": trend.total_value,
-        "gain": trend.total_gain,
-        "return": "4.77",
-        "fees": "29,000",
-        "asof": request.POST.get("AsOfDate", asof_date),
-        "greeting": f"{get_current_time_greeting()} {request.user.first_name}!",
-    }
-
-
-@login_required(login_url="/authentication/login")
-def main_monitor(request: HttpRequest):
-    context = get_summary_card_info(request)
-    return render(request, "main/monitor.html", context=context)
-
-
-def entity_allocation(request: HttpRequest):
-    """Entity allocation data endpoint."""
-    data = {
         "Alternatives": 1250,
         "Equities": 2790,
         "Fixed Income": 2970,
         "Other": 755,
     }
-    config = {
-        "type": "doughnut",
-        "data": {
-            "labels": list(data.keys()),
-            "datasets": [
-                {
-                    "label": "Portfolio Allocation",
-                    "backgroundColor": [
-                        "rgba(255, 99, 132, 0.5)",
-                        "rgba(54, 162, 235, 0.5)",
-                        "rgba(75, 192, 192, 0.5)",
-                        "#e8c3b9",
-                    ],
-                    "data": list(data.values()),
-                }
-            ],
-        },
-    }
-    return JsonResponse(config)
 
 
-def entity_trend(request: HttpRequest):
-    """Entity trend data endpoint."""
+def get_context_data(request: HttpRequest) -> dict:
+    context = {"greeting": f"{get_current_time_greeting()} {request.user.first_name}!"}
     trend = get_trend_history(request)
-    dates = [t.date for t in trend]
-    values = [t.total_value for t in trend]
-    config = {
-        "type": "line",
-        "data": {
-            "labels": dates,
-            "datasets": [
-                {
-                    "data": values,
-                    "label": "Market Value",
-                    "borderColor": "#4682B4",
-                    "fill": True,
-                }
-            ],
-        },
-    }
-    return JsonResponse(config)
+    if trend:
+        latest_trend = trend.latest("date")
+        asof_date = latest_trend.date.strftime("%Y-%m-%d")
+        latest_trend_values = {
+            "asof": request.POST.get("AsOfDate", asof_date),
+            "value": latest_trend.total_value,
+            "gain": latest_trend.total_gain,
+        }
+    else:
+        latest_trend_values = {
+            "asof": request.POST.get("AsOfDate"),
+            "value": "-",
+            "gain": "-",
+        }
+    context.update(latest_trend_values)
+    allocation = get_allocation_info(request)
+    context.update(
+        {
+            "return": "4.77",
+            "fees": "29,000",
+            "trend": trend,
+            "allocation": allocation,
+        }
+    )
+    return context
+
+
+@login_required(login_url="/authentication/login")
+def main_monitor(request: HttpRequest):
+    context = get_context_data(request)
+    return render(request, "main/monitor.html", context=context)
 
 
 def search(request: HttpRequest):
@@ -122,7 +94,9 @@ def get_entity_dropdown_items(
     client: Client, accounts: List[Account], selected_entity: str = None
 ) -> list:
     """Helper function to retrieve all dropdown items and keep selected_entity as first item."""
-    items = [client.clientid] if selected_entity != client.clientid else [selected_entity]
+    items = (
+        [client.clientid] if selected_entity != client.clientid else [selected_entity]
+    )
     for account in accounts:
         if account.accountid == selected_entity:
             continue
@@ -133,8 +107,10 @@ def get_entity_dropdown_items(
 
 
 def single_client(request):
+    # print(list(request.POST.items()))
+    context = get_context_data(request)
     if request.method == "POST":
-        if "selected_entity" in request.POST:
+        if request.POST.get("selected_entity"):
             selected_entity = request.POST["selected_entity"]
             try:
                 account_object = Account.objects.get(accountid=selected_entity)
@@ -147,11 +123,10 @@ def single_client(request):
                 client_object, account_objects, selected_entity
             )
 
-        if "selected_client" in request.POST:
+        if request.POST.get("selected_client"):
             selected_client = request.POST["selected_client"]
             client_object = Client.objects.get(clientid=selected_client)
             account_objects = Account.objects.filter(clientid=client_object)
             dropdown_items = get_entity_dropdown_items(client_object, account_objects)
-        context = get_summary_card_info(request)
         context.update({"dropdown_items": dropdown_items})
         return render(request, "main/single-client.html", context=context)

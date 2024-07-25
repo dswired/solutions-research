@@ -35,5 +35,11 @@
             </div>
         </div>
     </section>
-    <script src="{% static 'js/graphs.js' %}"></script>
+    <script>
+        var trendDates = [{% for t in trend %} '{{ t.date }}', {% endfor %}]
+        var trendValues = [{% for t in trend %} {{ t.total_value }}, {% endfor %}]
+        var allocationLabels = [{% for key, value in allocation.items %} '{{ key }}', {% endfor %}]
+        var allocationValues = [{% for key, value in allocation.items %} {{ value }}, {% endfor %}]
+    </script>
+    <script src="{% static 'js/main-monitor.js' %}"></script>
 {% endblock content %}

@@ -11,17 +11,9 @@ navLinkEls.forEach(navLinkEl => {
     });
 });
 
-
 const asOfDate = document.querySelector('#AsOfDate');
-asOfDate?.addEventListener("change", function () {
+asOfDate?.addEventListener("change", event => {
     document.querySelector('#AsOfDateInputForm').submit();
-});
-
-const selectedAccount = document.querySelector('#SelecetedAccount');
-selectedAccount?.addEventListener("change", function () {
-    document.querySelector('#AccountSelectForm').submit();
-    //const selectedAccountOptions = 
-    consolge.log(selectedAccount.value);
 });
 
 new Autocomplete('#autocomplete', {
@@ -36,6 +28,6 @@ new Autocomplete('#autocomplete', {
         })
     },
     onSubmit : result => {
-        document.querySelector("#ClientSelectForm").submit();
+        const entFormEl = document.querySelector("#EntitySelectForm").submit();
     }
 });
