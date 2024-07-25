@@ -2,11 +2,14 @@
 {% load static %}
 {% block title %}Equities{% endblock  %}
 {% block content %}
-    <div class="row p-1">
-        <div class="col-md-10">
-        </div>
-        <div class="col-md-2">
-            <p><span><strong>AsOf: </strong><input type="date" value="{{asof}}"></span></p>
+    <div class="container mt-3">
+        <div class="row">
+            <div class="col-md-6">         
+                <select class="form-select" name="equityticker" aria-label="Default select example" id="mySelect"></select>
+            </div>
+            <div class="col-md-3">         
+                <input type="date" name="asOfDate" value="{{asof}}" id="asOfDate">          
+            </div>
         </div>
     </div>
 
@@ -14,7 +17,15 @@
         <div class="p-1">
             {% include "partials/markets_summary_cards.html" %}
         </div>
-
+        <div class="row p-1">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="mb-0 font-weight-bold text-muted" id="tickerCommentary">{{tickerCommentary}}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="row p-1">
             <div class="col-md-12">
                 <div class="card shadow">
@@ -24,6 +35,17 @@
                 </div>
             </div>
         </div>
-    </section>
+        <div class="row p-1">
+            <div class="col-md-12">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="mb-0 font-weight-bold text-muted" id="trendCommentary">{{trendCommentary}}</h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+     </section>
+    <script src="{% static 'js/main.js' %}"></script>    
+    <script src="{% static 'js/ticker_selector.js' %}"></script>
     <script src="{% static 'js/graphs.js' %}"></script>
 {% endblock content %}
