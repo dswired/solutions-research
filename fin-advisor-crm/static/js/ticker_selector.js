@@ -5,7 +5,8 @@ const endPoint = '/equities/get_dropdown_data';
 const graphendPoint = '/equities/equity_trend';
 const chartElementId = 'equityPriceTrend';
 const dateInputElement = document.getElementById('asOfDate'); 
-const tag_name = 'equityticker';
+const ticker_tag = 'equityticker';
+const date_tag = 'asOfDate';
 
 
 async function equityAjaxEngine(
@@ -42,7 +43,9 @@ async function equityAjaxEngine(
                     selectedTicker, 
                     chartendPoint, 
                     chartElementId, 
-                    selectedDate
+                    selectedDate,
+                    ticker_tag,
+                    date_tag,
                 );
                 updateSummaryCard(
                     selectedTicker, 
