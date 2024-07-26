@@ -5,7 +5,7 @@
                 <div class="row align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold mb-1">Market Value</div>
-                        <h5 class="mb-0 font-weight-bold text-muted">{{market_value}}</h5>
+                        <h5 class="mb-0 font-weight-bold text-muted" id="marketValue">{{market_value}}</h5>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-coins fa-2x text-muted"></i>
@@ -20,7 +20,7 @@
                 <div class="row align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold mb-1">Price</div>
-                        <h5 class="mb-0 font-weight-bold text-muted">{{closing_price}}</h5>
+                        <h5 class="mb-0 font-weight-bold text-muted" id="closingPrice">{{closing_price}}</h5>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-chart-line fa-2x text-muted"></i>
@@ -34,8 +34,8 @@
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold mb-1">Total Return</div>
-                        <h5 class="mb-0 font-weight-bold text-muted">{{total_return}}</h5>
+                        <div class="text-xs font-weight-bold mb-1">Price Change</div>
+                        <h5 class="mb-0 font-weight-bold text-muted" id="priceChange">{{price_change}}</h5>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-percentage fa-2x text-muted"></i>
@@ -49,8 +49,8 @@
             <div class="card-body">
                 <div class="row align-items-center">
                     <div class="col mr-2">
-                        <div class="text-xs font-weight-bold mb-1">Volumes</div>
-                        <h5 class="mb-0 font-weight-bold text-muted">{{volume}}</h5>
+                        <div class="text-xs font-weight-bold mb-1">Total Shares</div>
+                        <h5 class="mb-0 font-weight-bold text-muted" id="volume">{{volume}}</h5>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-money-bill-wave-alt fa-2x text-muted"></i>
