@@ -1,0 +1,8 @@
+<form action="{% url 'single-client' %}" method="post" id="EntitySelectForm">
+    {% csrf_token %}
+    <div id="autocomplete" class="autocomplete">
+        <label for="SelectedEntity">Search for a Client</label>
+        <input class="autocomplete-input" name="selected_entity" id="SelectedEntity">
+        <ul class="autocomplete-result-list"></ul>
+    </div>
+</form>

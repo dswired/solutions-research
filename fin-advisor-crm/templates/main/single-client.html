@@ -1,23 +1,35 @@
 {% extends "base.html" %}
 {% load static %}
-{% block title %}Monitor Business{% endblock  %}
+{% block title %}{{client.name}}{% endblock %}
 {% block content %}
-    <div class="row m-4">
-        <div class="col-md-2">
-            <h3 class="font-weight-bold text-muted">Monitor</h3>
+
+    <form action="{% url 'single-client' %}" method="post" id="AccountSelectForm">
+        {% csrf_token %}
+        <div class="row m-4">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <select class="form-select" name="selected_entity" id="SelectedAccount" class="form-control">
+                        {% for item in dropdown_items %}
+                            <option value="{{item}}">{{item}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-4">
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <input type="date" name="AsOfDate" value="{{asof}}" id="ClientAsOfDate">
+                </div>
+            </div>
         </div>
-        <div class="col-md-8">
-            {% include "partials/client-autocomplete.html" %}
-        </div>
-        <div class="col-md-2 align-content-end">
-            {% include "partials/asof-date-selector.html" %}
-        </div>
-    </div>
+    </form>
 
     <section>
         <div class="p-1">
             {% include "partials/entity_summary_cards.html" %}
         </div>
+
         <div class="row p-1">
             <div class="col-md-8">
                 <div class="card shadow">
@@ -41,5 +53,6 @@
         var allocationLabels = [{% for key, value in allocation.items %} '{{ key }}', {% endfor %}]
         var allocationValues = [{% for key, value in allocation.items %} {{ value }}, {% endfor %}]
     </script>
+    <script src="{% static 'js/single-client.js' %}"></script>
     <script src="{% static 'js/main-monitor.js' %}"></script>
 {% endblock content %}

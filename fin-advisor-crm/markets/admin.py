@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import *
 
+
 # Register your models here.
 class DailyPublicEquityTradesAdmin(admin.ModelAdmin):
     list_display = [
@@ -16,7 +17,7 @@ class DailyPublicEquityTradesAdmin(admin.ModelAdmin):
         "closing_bid_price",
         "closing_offer_price",
         "total_shares_traded",
-        "total_value_traded"
+        "total_value_traded",
     ]
     search_fields = ["trade_date", "ticker"]
     ordering = ["trade_date", "ticker"]
