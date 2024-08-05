@@ -1,4 +1,5 @@
 from django.http.response import HttpResponse, HttpResponsePermanentRedirect
+from django.http import HttpRequest
 from django.shortcuts import render
 from django.contrib.auth.views import LoginView
 from django.urls import reverse_lazy
@@ -22,3 +23,10 @@ class RegisterView(FormView):
     def form_valid(self, form):
         form.save()  # save the user
         return super().form_valid(form)
+
+def check_username(request: HttpRequest):
+    username = request.POST.get('username')
+    if get_user_model().objects.filter(username=username).exists():
+        return HttpResponse("<div id='username-error' class='error'>Username already exists!</div>")
+    else:
+        return HttpResponse("<div id='username-error' class='success'>Username available!</div>")
