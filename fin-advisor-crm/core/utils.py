@@ -17,3 +17,12 @@ def get_current_time_greeting():
         return "Good afternoon"
     else:
         return "Good evening"
+
+
+def format_currency(value):
+    if value >= 1_000_000:
+        return "GHS{:,.0f} M".format(value / 1_000_000)
+    elif value >= 1_000:
+        return "GHS{:,.0f} K".format(value / 1_000)
+    else:
+        return "GHS{:,.0f}".format(value)
