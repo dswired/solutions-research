@@ -53,3 +53,8 @@ def add_film(request: HttpRequest):
 
     context = {"films": request.user.films.all()}
     return render(request, 'partials/film-list.html', context=context)
+
+def delete_film(request: HttpRequest, pk):
+    request.user.films.remove(pk)
+    context = {"films": request.user.films.all()}
+    return render(request, 'partials/film-list.html', context=context)
