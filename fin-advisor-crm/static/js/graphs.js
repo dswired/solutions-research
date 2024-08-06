@@ -6,16 +6,18 @@ function loadChart(
     selectedDate,
     ticker_tag,
     date_tag,
+    selectedtrendType,
+    trend_type_tag
     ) 
     {
     const endPoint = chartendPoint;
     console.log("Fetching data from "+ endPoint);
-    console.log("Selected ticker "+ selectedTicker + "for date" + selectedDate);
+    console.log("Selected ticker "+ selectedTicker + "for date " + selectedDate + "for metric " + selectedtrendType);
 
     const payload = {
-        // 'equityticker' : selectedTicker,
         [ticker_tag] : selectedTicker,
-        [date_tag] : selectedDate
+        [date_tag] : selectedDate,
+        [trend_type_tag] : selectedtrendType
     }
 
     fetch(endPoint, {

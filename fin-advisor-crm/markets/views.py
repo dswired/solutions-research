@@ -8,14 +8,17 @@ from core.utils import format_currency
 from markets.utils import (DESCRIPTION_PROMPT, 
                            TREND_CHART_PROMPT, 
                            EQUITY_DB_DATE_COL, 
-                           EQUITY_DB_PRICE_COL)
+                           EQUITY_DB_PRICE_COL,
+                           GSE_LIVE_PRICE_URL,
+                           GSE_URL
+                           )
 
 import json
 import datetime
 import requests
 import locale
 import numpy as np
-
+import pandas as pd
 
 import os
 from langchain_core.prompts import ChatPromptTemplate
@@ -23,10 +26,6 @@ from langchain_ollama.llms import OllamaLLM
 
 
 locale.setlocale(locale.LC_ALL, 'en_US.UTF-8')
-
-
-basic_url = 'https://dev.kwayisi.org/apis/gse/equities'
-detail_url = "https://dev.kwayisi.org/apis/gse/live"
 
 
 def prompter(prompt):
@@ -39,6 +38,11 @@ def get_dropdown_data(request):
     unique_tickers = list(set(tickers))
     print("drop down func:", unique_tickers)
     return JsonResponse({'unique_tickers': unique_tickers})
+
+
+def trend_view_toggle(request):
+    toggle_options = ["Prices", "Volume"]
+    return JsonResponse({"trend_toggle": toggle_options})
 
 
 def get_ticker_info(url, share_code):
@@ -75,10 +79,11 @@ def event_listener(request):
             request_body = json.loads(request.body)
             selected_ticker = request_body.get("equityticker")
             as_of_date = request_body.get("asOfDate")
-            print(f"Selected ticker: {selected_ticker} as of {as_of_date}")
+            trend_type = request_body.get("trendtoggle")
+            print(f"Selected ticker: {selected_ticker} as of {as_of_date} for {trend_type}")
         except json.JSONDecodeError:
             return JsonResponse({"error": "Invalid JSON"}, status=400)
-    return selected_ticker, as_of_date
+    return selected_ticker, as_of_date, trend_type
 
 
 def series_data_processor(per_ticker_data, date_col, metric_col):
@@ -92,12 +97,16 @@ def series_data_processor(per_ticker_data, date_col, metric_col):
 
 @csrf_exempt
 def get_summary_card_info(request: HttpRequest):
-    selected_ticker, as_of_date = event_listener(request=request)        
+    print("get_summary_card_info")
+    selected_ticker, as_of_date, trend_type = event_listener(request=request)        
+    
     # real time gse data pull from kwaiysi
     selected_ticker_upper = selected_ticker.upper()
-    ticker_info = get_ticker_info(url=basic_url, 
+    
+    ticker_info = get_ticker_info(url=GSE_URL, 
                                   share_code=selected_ticker_upper)
-    ticker_info_basic = get_ticker_info(url=detail_url,
+    
+    ticker_info_basic = get_ticker_info(url=GSE_LIVE_PRICE_URL,
                                               share_code=selected_ticker_upper)
 
     # advance api call
@@ -114,8 +123,7 @@ def get_summary_card_info(request: HttpRequest):
     print("sector", sector)
     print("industry", industry)
 
-    template = """Context: {question}
-                """
+    template = """Context: {question}"""
 
     input_question = DESCRIPTION_PROMPT.format(stock_name, 
                                                ticker_info,
@@ -139,22 +147,18 @@ def get_summary_card_info(request: HttpRequest):
         date_labels = [date_item for date_item in ticker_date]
         price_labels = [price_item for price_item in ticker_price]
 
-        mean_price = np.mean(price_labels)
-        median_price = np.median(price_labels)
-        price_std = np.std(price_labels)
-        min_price = np.min(price_labels)
-        max_price = np.max(price_labels)
+        mean_price = round(np.mean(price_labels), 2)
+        median_price = round(np.median(price_labels), 2)
+        price_std = round(np.std(price_labels), 2)
+        min_price = round(np.min(price_labels), 2)
+        max_price = round(np.max(price_labels), 2)
         inception_price = price_labels[0]
         inception_date = date_labels[0]
-
-
 
     except DailyPublicEquityTrades.DoesNotExist:
         return JsonResponse({"error": "Ticker not found"}, status=404)
 
     trend_input_question = TREND_CHART_PROMPT.format(stock_name, 
-                                               sector, 
-                                               industry,
                                                current_stock_price, 
                                                mean_price, 
                                                median_price,
@@ -176,28 +180,39 @@ def get_summary_card_info(request: HttpRequest):
         "trendCommentary": equity_trend_description
     }
     return JsonResponse(data)
-    # return JsonResponse({"error": "Invalid request method"}, status=405)
-
-
 
 
 @csrf_exempt
 def equity_trend(request):
-    print("equity trend ticker: ")
-
     """Equity trend data endpoint"""
-    selected_ticker, as_of_date = event_listener(request=request)
+    
+    selected_ticker, as_of_date, trend_type = event_listener(request=request)
+    print("equity_trend", trend_type)
 
     per_ticker_data = equity_trend_data_pull(
         selected_ticker=selected_ticker, 
         as_of_date=as_of_date
     )
+    metric_mapping = {"volume" : "total_shares_traded", "prices": "closing_price"}
+    db_metric_column = metric_mapping[trend_type]
 
     date_labels, price_labels = series_data_processor(
         per_ticker_data=per_ticker_data, 
         date_col=EQUITY_DB_DATE_COL, 
-        metric_col=EQUITY_DB_PRICE_COL
+        metric_col=db_metric_column
     )
+
+    trend_graph_data = pd.DataFrame({"Date" : date_labels, "Metrics": price_labels})
+    trend_graph_data["Date"] = pd.to_datetime(trend_graph_data["Date"])
+    trend_graph_data.set_index("Date", inplace=True)
+
+    if trend_type == "volume":
+        trend_graph_data_annual = trend_graph_data.resample("Q").sum()
+    else:
+        trend_graph_data_annual = trend_graph_data.resample("Q").mean()
+
+    date_labels = list(trend_graph_data_annual.index.date)
+    price_labels = list(trend_graph_data_annual.Metrics)
 
     config = {
         "type": "line",
@@ -213,7 +228,6 @@ def equity_trend(request):
             ],
         },
     }
-
     return JsonResponse(config)
 
 

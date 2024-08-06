@@ -10,6 +10,9 @@
             <div class="col-md-3">         
                 <input type="date" name="asOfDate" value="{{asof}}" id="asOfDate">          
             </div>
+            <div class="col-md-3">         
+                <select class="form-select" name="trendtoggle" id="trendSelect"></select>
+            </div>
         </div>
     </div>
 
@@ -45,7 +48,8 @@
             </div>
         </div>
      </section>
-    <script src="{% static 'js/main.js' %}"></script>    
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/market_utils.js' %}"></script>    
     <script src="{% static 'js/ticker_selector.js' %}"></script>
     <script src="{% static 'js/graphs.js' %}"></script>
 {% endblock content %}
