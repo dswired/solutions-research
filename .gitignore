@@ -136,3 +136,7 @@ dmypy.json
 
 *.xml
 *.iml
+*.xlsx
+Pipfile
+*.lock
+*.env
