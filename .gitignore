@@ -132,3 +132,11 @@ dmypy.json
 # Pyre type checker
 .pyre/
 *venv/
+*.csv
+
+*.xml
+*.iml
+*.xlsx
+Pipfile
+*.lock
+*.env
