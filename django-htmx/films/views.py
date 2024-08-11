@@ -1,7 +1,7 @@
 from typing import Any
 
 from django.db.models.query import QuerySet
-from django.http.response import HttpResponse, HttpResponsePermanentRedirect
+from django.http.response import HttpResponse
 from django.http import HttpRequest
 from django.shortcuts import render
 from django.contrib.auth.views import LoginView
