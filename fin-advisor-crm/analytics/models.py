@@ -85,3 +85,40 @@ class EntityTrend(models.Model):
     class Meta:
         unique_together = ["entity", "date", "advisor"]
         ordering = ["entity", "date"]
+
+class NAVHistory(models.Model):
+    entity = models.CharField(max_length=const.CHARACTER_MAX_LENGTH)
+    date = models.DateField()
+    mv_bop = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    net_deposits = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    deposits = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    withdrawals = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    gain = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    gross_gain = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    fees = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    expenses = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    interest = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    total_return = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )
+    mv_eop = models.DecimalField(
+        max_digits=const.MAX_DIGITS, decimal_places=const.DECIMAL_PLACES
+    )

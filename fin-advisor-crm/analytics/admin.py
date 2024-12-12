@@ -34,8 +34,14 @@ class EntityTrendAdmin(admin.ModelAdmin):
     search_fields = ["entity", "date", "advisor__username"]
     ordering = ["entity", "date"]
 
+class NAVHistoryAdmin(admin.ModelAdmin):
+    list_display = ["date", "entity", "total_return"]
+    search_fields = ["entity", "date", "advisor__username"]
+    ordering = ["entity", "date"]
+
 
 admin.site.register(SecurityPrice, SecurityPriceAdmin)
 admin.site.register(Transaction, TransactionAdmin)
 admin.site.register(Position, PositionAdmin)
 admin.site.register(EntityTrend, EntityTrendAdmin)
+admin.site.register(NAVHistory, NAVHistoryAdmin)
