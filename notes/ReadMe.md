@@ -1,0 +1,1 @@
+Simple note taking command-line tool built using click.
