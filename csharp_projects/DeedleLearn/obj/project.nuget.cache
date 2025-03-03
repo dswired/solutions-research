@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "dgSpecHash": "tItUTOKfQXk=",
+  "success": true,
+  "projectFilePath": "/Users/dswir/Desktop/my-repos/solutions-research/csharp_projects/DeedleLearn/DeedleLearn.csproj",
+  "expectedPackageFiles": [
+    "/Users/dswir/.nuget/packages/csvhelper/33.0.1/csvhelper.33.0.1.nupkg.sha512",
+    "/Users/dswir/.nuget/packages/deedle/3.0.0/deedle.3.0.0.nupkg.sha512",
+    "/Users/dswir/.nuget/packages/fsharp.core/4.5.2/fsharp.core.4.5.2.nupkg.sha512"
+  ],
+  "logs": []
+}
