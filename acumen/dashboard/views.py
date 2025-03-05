@@ -6,6 +6,7 @@ import plotly.graph_objects as go
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.cache import cache
+from django.contrib.auth.decorators import login_required
 
 
 def generate_stock_data():
@@ -143,7 +144,7 @@ def generate_sales_data():
 
     return sales_data
 
-
+@login_required
 def dashboard_view(request):
     df = generate_stock_data()
     latest_date = (

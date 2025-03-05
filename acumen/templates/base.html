@@ -22,11 +22,12 @@
 <body class="bg-base-200 bg-gray-100 min-h-screen">
 
     <div class="flex h-screen">
-        <!-- Sidebar Partial -->
-        {% include "partials/sidebar.html" %}
+        {% if  request.resolver_match.url_name != "login" %}
+            {% include "partials/sidebar.html" %} <!-- Sidebar is shown everywhere except login -->
+        {% endif %}
         
         <!-- Main Content -->
-        <div class="ml-64 flex-1 flex flex-col">
+        <div class="flex-1 flex flex-col">
             <main class="p-6">
                 {% block content %}{% endblock %}
             </main>
