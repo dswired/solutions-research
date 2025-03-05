@@ -17,11 +17,11 @@
                 <div class="relative">
                     <select id="chart-type" class="appearance-none p-2 pr-8 text-gray-800 font-semibold text-lg rounded-md"
                             hx-get="/update-chart/" 
-                            hx-trigger="change, #period-type:change" 
+                            hx-trigger="change, #period-type:change, #date-picker:change" 
                             hx-target="#line-chart-container"
                             hx-swap="innerHTML"
                             name="chart_type"
-                            hx-include="#period-type">
+                            hx-include="#period-type, #date-picker">
                         <option value="market_prices" selected>Market Prices</option>
                         <option value="cumulative_returns">Cumulative Returns</option>
                     </select>
@@ -34,11 +34,11 @@
                     <label for="period-type" class="sr-only">Select Period</label>
                     <select id="period-type" class="appearance-none p-2 pr-8 text-gray-800 font-semibold bg-gray-100 text-lg rounded-md"
                             hx-get="/update-chart/"
-                            hx-trigger="change, #chart-type:change"
+                            hx-trigger="change, #chart-type:change, #date-picker:change"
                             hx-target="#line-chart-container"
                             hx-swap="innerHTML"
                             name="period_type"
-                            hx-include="#chart-type"> <!--Ensures chart-type is also sent-->
+                            hx-include="#chart-type, #date-picker"> <!--Ensures chart-type is also sent-->
                         <option value="D" selected>Daily</option>
                         <option value="ME">Monthly</option>
                         <option value="QE">Quarterly</option>

@@ -4,7 +4,7 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from django.shortcuts import render
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.core.cache import cache
 
 
@@ -166,15 +166,16 @@ def dashboard_view(request):
 def update_line_chart(request):
     chart_type = request.GET.get("chart_type", "market_prices")
     period_type = request.GET.get("period_type", "D")
+    selected_date = request.GET["selected_date"]
 
-    print(chart_type, period_type, sep="~")
+    print(chart_type, period_type, selected_date, sep="~")
 
     df = generate_stock_data()
+    df = df[df["Date"] <= selected_date]
     if period_type != "D":
         df.set_index("Date", inplace=True)
         df = df.resample(period_type).first().reset_index()
 
-    print(df.head())
     chart_html = generate_chart(df, chart_type)
     return HttpResponse(chart_html)
 
