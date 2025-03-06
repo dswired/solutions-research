@@ -20,5 +20,6 @@ from django.urls import path, include
 urlpatterns = [
     path('admin/', admin.site.urls),
     path("authentication/", include("authentication.urls")),
+    path("rundeck/", include("rundeck.urls")),
     path('', include('dashboard.urls')),  # Route home page to dashboard
 ]
