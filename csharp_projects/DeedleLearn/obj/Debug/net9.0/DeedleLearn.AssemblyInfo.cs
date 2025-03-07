@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DeedleLearn")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+046b11d359d3a9cd970bb542ffd4177eac14106d")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ac9f3f212b916a0cb7955060fae41ea1b965be07")]
 [assembly: System.Reflection.AssemblyProductAttribute("DeedleLearn")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DeedleLearn")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

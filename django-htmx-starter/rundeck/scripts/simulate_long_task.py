@@ -1,6 +1,6 @@
 import time
-from scripts.utils.logging import setup_logger  # Import centralized logger
-from scripts.utils.argument_factory import get_default_parser  # Import default argparse parser
+from utils.logging import setup_logger  # Import centralized logger
+from utils.argument_factory import get_default_parser  # Import default argparse parser
 
 def main():
     parser = get_default_parser("Simulates a long-running task with progress updates.")

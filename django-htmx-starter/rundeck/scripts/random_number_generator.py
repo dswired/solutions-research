@@ -1,8 +1,8 @@
 import time
 import random
 import click
-from scripts.utils.logging import setup_logger
-from scripts.utils.argument_factory import click_defaults  # Import Click argument defaults
+from utils.logging import setup_logger
+from utils.argument_factory import click_defaults  # Import Click argument defaults
 
 @click.command()
 @click_defaults()  # Automatically adds --log-level and --version

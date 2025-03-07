@@ -1,7 +1,7 @@
 import time
 
-from scripts.utils.logging import setup_logger
-from scripts.utils.argument_factory import get_default_parser
+from utils.logging import setup_logger
+from utils.argument_factory import get_default_parser
 
 def main():
     parser = get_default_parser("Example script that prints a greeting message.")
