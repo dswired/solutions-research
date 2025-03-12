@@ -1,0 +1,53 @@
+<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6" hx-indicator="#htmx-spinner">
+    {% for ticker in page_obj.object_list %}
+    <div class="bg-white p-4 shadow-md rounded-lg transition-all duration-300 hover:shadow-lg relative group">
+        <!-- Header: Symbol & Sparkline -->
+        <div class="flex justify-between items-center">
+            <h2 class="text-lg font-semibold text-gray-700 group-hover:opacity-0 transition-opacity duration-300">
+                {{ ticker.symbol }}
+            </h2>
+            <div class="m-1">
+                {{ ticker.sparkline|safe }}
+            </div>
+        </div>
+
+        <!-- Full Company Name (Appears on Hover) -->
+        <div class="absolute inset-0 flex justify-center items-center bg-white bg-opacity-90 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg">
+            <p class="text-lg font-semibold text-gray-700">{{ ticker.name }}</p>
+        </div>
+
+        <!-- Latest Price -->
+        <p class="text-2xl font-bold text-gray-800 mt-2">
+            ${{ ticker.latest_price|floatformat:2 }}
+        </p>
+
+        <!-- Percentage Change (Dynamic Color) -->
+        <p class="text-sm font-bold {% if ticker.percent_change >= 0 %} text-green-500 {% else %} text-red-500 {% endif %}">
+            {% if ticker.percent_change >= 0 %} ▲ {% else %} ▼ {% endif %} {{ ticker.percent_change|floatformat:2 }}%
+        </p>
+    </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination Controls (Inside HTMX Swap Area) -->
+<div class="mt-4 flex justify-center space-x-4">
+    {% if page_obj.has_previous %}
+        <a hx-get="?page={{ page_obj.previous_page_number }}&selected_date={{ selected_date }}" 
+            hx-target="#stock-summary" 
+            hx-swap="innerHTML"
+            hx-push-url="true"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
+                Previous
+        </a>
+    {% endif %}
+
+    {% if page_obj.has_next %}
+        <a hx-get="?page={{ page_obj.next_page_number }}&selected_date={{ selected_date }}" 
+            hx-target="#stock-summary" 
+            hx-swap="innerHTML"
+            hx-push-url="true"
+            class="px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300 transition">
+            Next
+        </a>
+    {% endif %}
+</div>

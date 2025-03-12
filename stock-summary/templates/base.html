@@ -19,10 +19,18 @@
     <!-- HTMX -->
     <script src="https://unpkg.com/htmx.org@1.9.4"></script>
 </head>
-<body class="bg-base-200 bg-gray-100 min-h-screen">
+<body class="bg-base-200 bg-gray-100 min-h-screen" hx-indicator="#htmx-spinner">
+
+    <!-- Loading Indicator (Hidden by Default) -->
+    <div 
+        id="htmx-spinner" 
+        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 hidden z-50"
+        aria-hidden="true">
+        <div class="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-white"></div>
+    </div>
 
     <div class="flex h-screen">
-        {% if  request.resolver_match.url_name != "login" %}
+        {% if request.resolver_match.url_name != "login" %}
             {% include "partials/sidebar.html" %} <!-- Sidebar is shown everywhere except login -->
         {% endif %}
         

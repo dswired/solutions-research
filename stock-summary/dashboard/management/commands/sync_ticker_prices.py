@@ -95,19 +95,26 @@ class Command(BaseCommand):
             sub_df = df[symbol]
             rows_inserted = 0
             for index, row in sub_df.iterrows():
-                date_val = index.date()
-                hp_values = {
-                    "open_price": row["Open"],
-                    "high_price": row["High"],
-                    "low_price": row["Low"],
-                    "close_price": row["Close"],
-                    "volume": row["Volume"],
-                }
-                _, created = HistoricalPrice.objects.update_or_create(
-                    ticker=ticker, date=date_val, defaults=hp_values
-                )
-                if created:
-                    rows_inserted += 1
+                try:
+                    date_val = index.date()
+                    hp_values = {
+                        "open_price": row["Open"],
+                        "high_price": row["High"],
+                        "low_price": row["Low"],
+                        "close_price": row["Close"],
+                        "volume": row["Volume"],
+                    }
+                    _, created = HistoricalPrice.objects.update_or_create(
+                        ticker=ticker, date=date_val, defaults=hp_values
+                    )
+                    if created:
+                        rows_inserted += 1
+                except Exception as err:
+                    self.stdout.write(
+                        self.style.ERROR(
+                            f"   Unexepected error -> {symbol} data: {err}."
+                        )
+                    )
 
             self.stdout.write(
                 self.style.SUCCESS(

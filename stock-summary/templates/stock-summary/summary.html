@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="ml-64 p-6 bg-gray-100 h-screen">
+    <div class="flex justify-between items-center mb-4">
+        <h1 class="text-2xl font-bold text-gray-800">Financial Overview</h1>
+        {% include "partials/stock-summary-datepicker.html" %}
+    </div>
+
+    <div id="stock-summary" hx-swap="innerHTML">
+        {% include "partials/stock-summary-cards.html" %}
+    </div>
+{% endblock %}

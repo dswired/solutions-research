@@ -1,13 +1,18 @@
 import random
-import json
+import time
 import pandas as pd
 import plotly.express as px
-import plotly.graph_objects as go
 from django.shortcuts import render
 from django.http import HttpResponse
 from django.core.cache import cache
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
+from django.template.loader import render_to_string
+from django.core.paginator import Paginator
+
+
+from .models import Ticker, HistoricalPrice
+from datetime import datetime, timedelta, date
 
 
 
@@ -192,3 +197,114 @@ def clear_stock_request_cache(request):
 def clear_stock_cache():
     cache.delete("stock_data")  # Clears the cached stock data
     return HttpResponse("Stock data cache cleared.")
+
+
+
+def generate_sparkline(price_data):
+    """
+    Creates a Plotly sparkline using px.line() and returns it as an HTML div.
+    """
+    if not price_data:
+        return ""
+
+    # Create DataFrame for Plotly Express
+    df = {"index": list(range(len(price_data))), "price": price_data}
+
+    # Generate Sparkline using px.line()
+    fig = px.line(
+        df,
+        x="index",
+        y="price",
+    )
+
+    # Format the chart (minimalist styling)
+    fig.update_layout(
+        template="none",
+        plot_bgcolor="white",  # Match card background
+        paper_bgcolor="white",
+        margin=dict(l=0, r=0, t=0, b=0),
+        xaxis=dict(visible=False),  # Hide X-axis
+        yaxis=dict(visible=False),  # Hide Y-axis
+        height=50,  # Small height for sparkline effect
+        width=140,  # Small width to fit inside card
+    )
+    fig.update_traces(line=dict(color="#1E3A8A"))
+    # Convert the figure to an HTML div string
+    sparkline_html = fig.to_html(full_html=False)
+
+    return sparkline_html
+
+@login_required
+@never_cache
+def ticker_summary_view(request):
+    time.sleep(2)
+    tickers = Ticker.objects.all()
+    ticker_data = []
+
+    selected_date = request.GET.get("selected_date")
+    today = date.today()
+    if selected_date:
+        # parse to a datetime.date
+        sdate = datetime.strptime(selected_date, "%Y-%m-%d").date()
+    else:
+        sdate = today
+
+    ninety_days_ago = sdate - timedelta(days=90)
+
+    for ticker in tickers:
+        price_data_qs = HistoricalPrice.objects.filter(
+            ticker=ticker,
+            date__range=(ninety_days_ago, sdate)  # Get prices within this date range
+        ).order_by('date').values_list('close_price', flat=True)
+
+        # Convert to list only if there is data
+        price_data = list(price_data_qs) if price_data_qs.exists() else []
+
+        # Extract latest and old prices
+        latest_price = price_data[-1] if price_data else None
+        print(ticker.symbol, latest_price, sep="~")
+        old_price = price_data[0] if price_data else None
+
+        if latest_price and old_price and old_price != 0:
+            percent_change = ((latest_price - old_price) / old_price) * 100
+        else:
+            percent_change = None
+
+        
+        # Prepare sparkline data
+        sparkline = generate_sparkline(price_data)
+
+        ticker_data.append({
+            "symbol": ticker.symbol,
+            "name": ticker.name,
+            "latest_price": latest_price,
+            "percent_change": percent_change,
+            "sparkline": sparkline,
+        })
+    
+    # print(sdate, today, sep="~")
+
+    #Implement pagination: 20 tickers per page
+    paginator = Paginator(ticker_data, 20)
+    page_number = request.GET.get("page", 1)
+    page_obj = paginator.get_page(page_number)
+
+    context = {
+        "today": today.strftime("%Y-%m-%d"),
+        "selected_date": sdate.strftime("%Y-%m-%d"),
+        "page_obj": page_obj
+    }
+
+    print("Page Number:", page_obj.number)
+    print("Total Pages:", page_obj.paginator.num_pages)
+    print("Has Next?", page_obj.has_next())
+    print("Next Page #:", page_obj.next_page_number() if page_obj.has_next() else "N/A")
+
+    
+    # If request is from HTMX, return only the stock summary partial
+    if "HX-Request" in request.headers:
+        html = render_to_string("partials/stock-summary-cards.html", context)
+        return HttpResponse(html)
+
+    # Otherwise, return full page
+    return render(request, "stock-summary/summary.html", context)

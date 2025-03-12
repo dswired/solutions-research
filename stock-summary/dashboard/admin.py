@@ -17,3 +17,4 @@ class TickerMetadataAdmin(admin.ModelAdmin):
 class HistoricalPriceAdmin(admin.ModelAdmin):
     list_display = ('ticker', 'date', 'close_price', 'volume')
     list_filter = ('ticker', 'date')
+    search_fields = ('ticker__symbol',)
