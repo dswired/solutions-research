@@ -237,7 +237,7 @@ def generate_sparkline(price_data):
 @login_required
 @never_cache
 def ticker_summary_view(request):
-    time.sleep(2)
+    time.sleep(3)
     tickers = Ticker.objects.all()
     ticker_data = []
 

@@ -7,7 +7,7 @@
         {% include "partials/stock-summary-datepicker.html" %}
     </div>
 
-    <div id="stock-summary" hx-swap="innerHTML">
+    <div id="stock-summary" hx-swap="innerHTML" hx-indicator="#htmx-spinner">
         {% include "partials/stock-summary-cards.html" %}
     </div>
 {% endblock %}
