@@ -1,99 +1,70 @@
-<aside class="bg-gray-800 text-white shadow-md p-4 flex flex-col h-screen fixed transition-all duration-300 ease-in-out" :class="isCollapsed ? 'w-16' : 'w-64'">
-<!-- Toggle Button -->
-<button @click="toggleSidebar" 
-        class="absolute top-3 -right-8 bg-gray-100 text-gray-800 p-2 rounded focus:outline-none 
-               transition-transform shadow-lg hover:bg-gray-200 hover:cursor-pointer">
-    <!-- Menu (hamburger) icon -->
-    <i class="fas fa-bars"></i>
-</button>
+<aside class="bg-gray-800 text-white shadow-md p-4 flex flex-col h-screen fixed transition-all duration-300 ease-in-out w-64">
+    <!-- Sidebar Header -->
+    <h2 class="text-xl font-bold text-center tracking-wide border-b border-gray-600 pb-3 mb-4">
+        <span>Quant Labs</span>
+    </h2>
 
-<!-- Sidebar Header -->
-<h2 class="text-xl font-bold text-center tracking-wide border-b border-gray-600 pb-3 mb-4">
-    <!-- Show full text if expanded, else show 'QL' -->
-    <span v-if="!isCollapsed">Quant Labs</span>
-    <span v-else>QL</span>
-</h2>
-
-<!-- Navigation Menu -->
-<ul class="menu space-y-3">
-    <li>
-        <a
-            href="#"
-            class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600"
-        >
-            <i class="fas fa-chart-line text-lg"></i>
-            <span v-if="!isCollapsed" class="ml-3">Overview</span>
-        </a>
-    </li>
-    <li>
-        <a
-            href="#"
-            class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600"
-        >
-            <i class="fas fa-chart-bar text-lg"></i>
-            <span v-if="!isCollapsed" class="ml-3">Analytics</span>
-        </a>
-    </li>
-    <li>
-        <a
-            href="https://ca.finance.yahoo.com/"
-            target="_blank"
-            class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600"
-        >
-            <i class="fas fa-external-link-alt text-lg"></i>
-            <span v-if="!isCollapsed" class="ml-3">Yahoo Finance</span>
-        </a>
-    </li>
-    <li>
-        <a
-            href="#"
-            class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600"
-        >
-            <i class="fas fa-server text-lg"></i>
-            <span v-if="!isCollapsed" class="ml-3">Rundeck</span>
-        </a>
-    </li>
-    <li>
-        <a
-            href="#"
-            class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600"
-        >
-            <i class="fas fa-file-alt text-lg"></i>
-            <span v-if="!isCollapsed" class="ml-3">Reports</span>
-        </a>
-    </li>
-    <hr class="my-2 border-gray-100">
-    <li>
-        <details class="group">
-            <summary
-                class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600 cursor-pointer"
-            >
-                <i class="fas fa-cog text-lg"></i>
-                <span v-if="!isCollapsed" class="ml-3">Settings</span>
-                <i
-                    v-if="!isCollapsed"
-                    class="fas fa-chevron-down ml-auto transition-transform group-open:rotate-180"
-                ></i>
-            </summary>
-            <ul v-if="!isCollapsed" class="ml-6 mt-2 space-y-2">
-                <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Setting 1</a></li>
-                <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Setting 2</a></li>
-                <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Setting 3</a></li>
-            </ul>
-        </details>
-    </li>
-    <li class="mt-auto">
-        <form method="POST" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button
-                type="submit"
-                class="flex items-center p-4 text-lg w-full text-left rounded-lg
-                    hover:bg-gray-700 active:bg-gray-600 transition duration-200 ease-in-out"
-            >
-                <i class="fas fa-sign-out-alt text-lg"></i>
-                <span v-if="!isCollapsed" class="ml-3">Logout</span>
-            </button>
-        </form>
-    </li>
-</ul>
+    <!-- Navigation Menu -->
+    <ul class="menu space-y-3">
+        <li>
+            <a href="#" class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600">
+                <i class="fas fa-chart-line text-lg"></i>
+                <span class="ml-3">Overview</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600">
+                <i class="fas fa-chart-bar text-lg"></i>
+                <span class="ml-3">Analytics</span>
+            </a>
+        </li>
+        <li>
+            <a href="https://ca.finance.yahoo.com/" target="_blank" class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600">
+                <i class="fas fa-external-link-alt text-lg"></i>
+                <span class="ml-3">Yahoo Finance</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600">
+                <i class="fas fa-server text-lg"></i>
+                <span class="ml-3">Rundeck</span>
+            </a>
+        </li>
+        <li>
+            <a href="#" class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600">
+                <i class="fas fa-file-alt text-lg"></i>
+                <span class="ml-3">Reports</span>
+            </a>
+        </li>
+        <hr class="my-2 border-gray-100">
+        <li>
+            <details class="group">
+                <summary
+                    class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600 cursor-pointer"
+                >
+                    <i class="fas fa-cog text-lg"></i>
+                    <span class="ml-3">Settings</span>
+                    <i class="fas fa-chevron-down ml-auto transition-transform group-open:rotate-180"></i>
+                </summary>
+                <ul class="ml-6 mt-2 space-y-2">
+                    <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Setting 1</a></li>
+                    <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Setting 2</a></li>
+                    <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Setting 3</a></li>
+                </ul>
+            </details>
+        </li>
+        <li class="mt-auto">
+            <form method="POST" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button
+                    type="submit"
+                    class="flex items-center p-4 text-lg w-full text-left rounded-lg
+                        hover:bg-gray-700 active:bg-gray-600 transition duration-200 ease-in-out"
+                >
+                    <i class="fas fa-sign-out-alt text-lg"></i>
+                    <span class="ml-3">Logout</span>
+                </button>
+            </form>
+        </li>
+    </ul>
 </aside>

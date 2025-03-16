@@ -3,7 +3,7 @@ from dashboard.models import Ticker, TickerMetadata
 
 import yfinance as yf
 
-from dashboard.contants.yahoo_finance import TICKERS
+from dashboard.constants.yahoo_finance import TICKERS
 
 
 def sync_ticker_and_metadata(symbol):

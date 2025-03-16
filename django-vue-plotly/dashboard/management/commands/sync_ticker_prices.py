@@ -1,14 +1,14 @@
+from datetime import datetime
+
 from django.core.management.base import BaseCommand
 import yfinance as yf
-from datetime import datetime
 from dashboard.models import Ticker, HistoricalPrice
-import pandas as pd
-
+from dashboard.constants.yahoo_finance import TICKERS
 
 class Command(BaseCommand):
     """
     Usage:
-      python manage.py sync_prices --start_date=YYYY-MM-DD --end_date=YYYY-MM-DD [--symbols AAPL MSFT]
+        python manage.py sync_prices --start_date=YYYY-MM-DD --end_date=YYYY-MM-DD [--symbols AAPL MSFT]
 
     If --symbols is omitted, the command will fetch prices for ALL Ticker objects in the DB.
     """
@@ -45,10 +45,9 @@ class Command(BaseCommand):
 
         self.stdout.write(f"Fetching data from {start_date} to {end_date}...")
 
-        if symbols:
-            ticker_qs = Ticker.objects.filter(symbol__in=symbols)
-        else:
-            ticker_qs = Ticker.objects.all()
+        if not symbols:
+            symbols = TICKERS        
+        ticker_qs = Ticker.objects.filter(symbol__in=symbols)
 
         if not ticker_qs.exists():
             self.stdout.write(self.style.ERROR("No tickers found to sync."))
