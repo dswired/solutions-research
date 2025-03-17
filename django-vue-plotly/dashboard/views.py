@@ -1,8 +1,13 @@
-from django.shortcuts import render
+from collections import defaultdict
+from datetime import datetime, timedelta, date
+
+from django.shortcuts import render, get_object_or_404
+from django.core.cache import cache
+from django.http import JsonResponse
+from django.db.models import Q
 import plotly.express as px
 
 from .models import Ticker, HistoricalPrice
-from datetime import datetime, timedelta, date
 
 # Create your views here.
 
@@ -54,37 +59,52 @@ def index(request):
 
     ninety_days_ago = sdate - timedelta(days=90)
 
-    for ticker in tickers:
-        price_data_qs = HistoricalPrice.objects.filter(
-            ticker=ticker,
-            date__range=(ninety_days_ago, sdate)  # Get prices within this date range
-        ).order_by('date').values_list('close_price', flat=True)
+    # Get all relevant historical prices once!
+    historical_prices = HistoricalPrice.objects.filter(
+        ticker__in = tickers,
+        date__range=(ninety_days_ago, sdate)
+    ).order_by('ticker', 'date').values('ticker', 'date', 'close_price')
 
-        if not price_data_qs.exists():
-            continue
+    price_dict = defaultdict(list)
 
-        price_data = list(price_data_qs)
+    for entry in historical_prices:
+        price_dict[entry["ticker"]].append(entry["close_price"])
+    
+    cache_key = f"prices_{sdate}"
+    cached_data = cache.get(cache_key)
 
-        # Extract latest and old prices
-        latest_price = price_data[-1] if price_data else None
-        print(ticker.symbol, latest_price, sep="~")
-        old_price = price_data[0] if price_data else None
+    if cached_data:
+        ticker_data = cached_data
+    else:
+        print("cache expired")
+        ticker_data = []
+        for ticker in tickers:
+            price_data = price_dict.get(ticker.id, [])
 
-        if latest_price and old_price and old_price != 0:
-            percent_change = ((latest_price - old_price) / old_price) * 100
-        else:
-            percent_change = None
-        
-        # Prepare sparkline data
-        sparkline = generate_sparkline(price_data)
+            if not price_data:
+                continue
 
-        ticker_data.append({
-            "symbol": ticker.symbol,
-            "name": ticker.name,
-            "latest_price": latest_price,
-            "percent_change": percent_change,
-            "sparkline": sparkline,
-        })
+            # Extract latest and old prices
+            latest_price = price_data[-1] if price_data else None
+            print(ticker.symbol, latest_price, sep="~")
+            old_price = price_data[0] if price_data else None
+
+            if latest_price and old_price and old_price != 0:
+                percent_change = ((latest_price - old_price) / old_price) * 100
+            else:
+                percent_change = None
+            
+            # Prepare sparkline data
+            sparkline = generate_sparkline(price_data)
+
+            ticker_data.append({
+                "symbol": ticker.symbol,
+                "name": ticker.name,
+                "latest_price": latest_price,
+                "percent_change": percent_change,
+                "sparkline": sparkline,
+            })
+        cache.set(cache_key, ticker_data, timeout=60*15) # cache for 15 mins
 
     context = {
         "date_value": sdate.strftime("%Y-%m-%d"),
@@ -93,3 +113,44 @@ def index(request):
     }
 
     return render(request, 'dashboard/index.html', context)
+
+def ticker_detail(request, symbol):
+    try:
+        ticker = Ticker.objects.get(symbol=symbol)
+    except Ticker.DoesNotExist:
+        return render(request, "dashboard/404.html", status=404)
+
+    today = date.today()
+    ninety_days_ago = today - timedelta(days=90)
+
+    price_data_qs = HistoricalPrice.objects.filter(
+        ticker=ticker,
+        date__range=(ninety_days_ago, today)
+    ).order_by('date').values_list('date', 'close_price')
+
+    price_data = list(price_data_qs)
+    latest_price = price_data[-1][1] if price_data else None
+    old_price = price_data[0][1] if price_data else None
+    percent_change = ((latest_price - old_price) / old_price) * 100 if old_price else None
+
+    context = {
+        "ticker": ticker,
+        "latest_price": latest_price,
+        "percent_change": percent_change,
+        "price_data": price_data,
+    }
+    return render(request, 'dashboard/ticker_detail.html', context)
+
+def ticker_suggestions(request):
+    query = request.GET.get("q", "").strip()
+    if not query:
+        return JsonResponse([], safe=False)
+    
+    matches = Ticker.objects.filter(
+        Q(symbol__startswith=query) | Q(name__icontains=query)
+    ).order_by("symbol")[:10]
+
+    results = [
+        {"symbol": t.symbol, "name": t.name} for t in matches
+    ]
+    return JsonResponse(results, safe=False)

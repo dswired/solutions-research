@@ -36,7 +36,7 @@ class TickerMetadata(models.Model):
 
 class HistoricalPrice(models.Model):
     ticker = models.ForeignKey(Ticker, on_delete=models.CASCADE, related_name='historical_prices') # Convenient way to access all prices for a given ticker
-    date = models.DateField()
+    date = models.DateField(db_index=True)
     open_price = models.DecimalField(max_digits=12, decimal_places=4)
     high_price = models.DecimalField(max_digits=12, decimal_places=4)
     low_price = models.DecimalField(max_digits=12, decimal_places=4)
@@ -46,6 +46,9 @@ class HistoricalPrice(models.Model):
     class Meta:
         unique_together = ('ticker', 'date')
         ordering = ['date']
+        indexes = [
+            models.Index(fields=['ticker', 'date'])
+        ]
 
     def __str__(self):
         return f"{self.ticker.symbol} on {self.date}: Close={self.close_price}"

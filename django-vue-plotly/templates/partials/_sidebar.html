@@ -7,7 +7,7 @@
     <!-- Navigation Menu -->
     <ul class="menu space-y-3">
         <li>
-            <a href="#" class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600">
+            <a href="{% url "dashboard" %}" class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600">
                 <i class="fas fa-chart-line text-lg"></i>
                 <span class="ml-3">Overview</span>
             </a>
@@ -37,22 +37,24 @@
             </a>
         </li>
         <hr class="my-2 border-gray-100">
-        <li>
-            <details class="group">
-                <summary
-                    class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600 cursor-pointer"
-                >
-                    <i class="fas fa-cog text-lg"></i>
-                    <span class="ml-3">Settings</span>
-                    <i class="fas fa-chevron-down ml-auto transition-transform group-open:rotate-180"></i>
-                </summary>
-                <ul class="ml-6 mt-2 space-y-2">
-                    <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Setting 1</a></li>
-                    <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Setting 2</a></li>
-                    <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Setting 3</a></li>
-                </ul>
-            </details>
-        </li>
+        {% if request.user.is_staff %}
+            <li>
+                <details class="group">
+                    <summary
+                        class="flex items-center p-4 text-lg rounded-lg hover:bg-gray-700 active:bg-gray-600 cursor-pointer"
+                    >
+                        <i class="fas fa-cog text-lg"></i>
+                        <span class="ml-3">Administration</span>
+                        <i class="fas fa-chevron-down ml-auto transition-transform group-open:rotate-180"></i>
+                    </summary>
+                    <ul class="ml-6 mt-2 space-y-2">
+                        <li><a href="{% url 'admin:index' %}" class="block p-3 rounded-lg hover:bg-gray-700">Admin Panel</a></li>
+                        <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Load Data</a></li>
+                        <li><a href="#" class="block p-3 rounded-lg hover:bg-gray-700">Setting 3</a></li>
+                    </ul>
+                </details>
+            </li>
+        {% endif %}
         <li class="mt-auto">
             <form method="POST" action="{% url 'logout' %}">
                 {% csrf_token %}
